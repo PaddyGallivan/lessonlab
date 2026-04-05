@@ -2711,7 +2711,7 @@ function buildHTML(d, cfg, cds) {
   const scaff = (typeof SCAFFOLDS !== 'undefined' && SCAFFOLDS[subjKey]) ? SCAFFOLDS[subjKey] : {};
   const c = cfg.colour;
   const ac = cfg.accent || c;
-  const sc = d.sc.split('\n').filter(s => s.trim());
+  const sc = (Array.isArray(d.sc) ? d.sc : (d.sc || '').split('\n')).filter(s => s.trim());
   const cdTxt = cds.map(x => `<b>${x.code}</b> · ${x.desc}`).join('<br>');
   const logo = d.logo ? `<img src="${d.logo}" style="width:125px;display:block;">` : '';
   const P = cfg.phases, T = cfg.times;
