@@ -4234,6 +4234,9 @@ function generateSingle() {
     logo: typeof logoData !== 'undefined' ? logoData : ''
   };
 
+  // Show loading state
+  document.getElementById('progressFill').style.width = '50%';
+  document.body.style.cursor = 'wait';
   // Defer heavy rendering to avoid blocking the main thread
   setTimeout(() => {
     const html = buildHTML(fullData, state.subjectCfg, cds);
@@ -4251,6 +4254,7 @@ function generateSingle() {
       });
     }
     goPanel('results');
+    document.body.style.cursor = 'default';
   }, 50);
 }
 
