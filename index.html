@@ -1967,13 +1967,13 @@
 const SUPABASE_URL = 'https://bmwnxajhrvvpziubljav.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtd254YWpocnZ2cHppdWJsamF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NzkwMTksImV4cCI6MjA5MTA1NTAxOX0.DZhoaMOv5ZvhXWGfzYv72ao1TxogDgUX4fXOeXtaDlI';
 
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 let currentUser = null;
 let authMode = 'magic';
 
 async function initAuth() {
-  if (!supabase) { showAppWithoutAuth(); return; }
-  const { data: { session } } = await supabase.auth.getSession();
+  if (!sb) { showAppWithoutAuth(); return; }
+  const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
     await loadProfile();
@@ -1985,7 +1985,7 @@ async function initAuth() {
       showAuthModal();
     }
   }
-  supabase.auth.onAuthStateChange(async (event, session) => {
+  sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
       currentUser = session.user;
       await loadProfile();
@@ -2000,7 +2000,7 @@ async function initAuth() {
 
 async function loadProfile() {
   if (!supabase || !currentUser) return;
-  const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
   if (data) {
     currentUser.profile = data;
     if (data.school_name) state.school = data.school_name;
@@ -2049,7 +2049,7 @@ function toggleAuthMode() {
 }
 
 async function handleAuth() {
-  if (!supabase) return;
+  if (!sb) return;
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
   const btn = document.getElementById('authSubmit');
@@ -2057,7 +2057,7 @@ async function handleAuth() {
   btn.disabled = true; btn.textContent = 'Please wait...';
   try {
     if (authMode === 'magic') {
-      const { error: err } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
+      const { error: err } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
       if (err) throw err;
       btn.textContent = '\u2713 Check your email!';
       document.getElementById('authSubtitle').textContent = 'We sent a magic link to ' + email;
@@ -2069,15 +2069,15 @@ async function handleAuth() {
       const userState = document.getElementById('authState').value;
       if (!password || password.length < 6) { showAuthError('Password must be at least 6 characters'); btn.disabled = false; updateAuthUI(); return; }
       if (!userState) { showAuthError('Please select your state'); btn.disabled = false; updateAuthUI(); return; }
-      const { data, error: err } = await supabase.auth.signUp({ email, password, options: { data: { display_name: name || email.split('@')[0] } } });
+      const { data, error: err } = await sb.auth.signUp({ email, password, options: { data: { display_name: name || email.split('@')[0] } } });
       if (err) throw err;
-      if (data.user) { await supabase.from('profiles').update({ state: userState, display_name: name || email.split('@')[0] }).eq('id', data.user.id); }
+      if (data.user) { await sb.from('profiles').update({ state: userState, display_name: name || email.split('@')[0] }).eq('id', data.user.id); }
       if (data.session) { currentUser = data.user; await loadProfile(); showAppLoggedIn(); hideAuthModal(); }
       else { btn.textContent = '\u2713 Check your email!'; document.getElementById('authSubtitle').textContent = 'We sent a confirmation link to ' + email; }
       return;
     }
     if (authMode === 'login') {
-      const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error: err } = await sb.auth.signInWithPassword({ email, password });
       if (err) throw err;
       currentUser = data.user; await loadProfile(); showAppLoggedIn(); hideAuthModal();
       return;
@@ -2090,7 +2090,7 @@ function showAuthError(msg) { const el = document.getElementById('authError'); e
 function skipAuth() { localStorage.setItem('lessonlab_skip_auth', 'true'); hideAuthModal(); showAppWithoutAuth(); }
 
 async function signOut() {
-  if (supabase) await supabase.auth.signOut();
+  if (sb) await sb.auth.signOut();
   currentUser = null;
   localStorage.removeItem('lessonlab_skip_auth');
   showAppLoggedOut();
@@ -2130,14 +2130,14 @@ async function saveLessonToCloud(lessonData) {
     title: lessonData.title || '', learning_intention: lessonData.li || '',
     success_criteria: lessonData.sc || [], equipment: lessonData.equipment || '', lesson_data: lessonData
   };
-  const { data, error } = await supabase.from('lessons').insert(record).select().single();
+  const { data, error } = await sb.from('lessons').insert(record).select().single();
   if (error) { console.warn('Cloud save failed:', error.message); return null; }
   return data;
 }
 
 async function loadLessonsFromCloud() {
   if (!supabase || !currentUser) return [];
-  const { data, error } = await supabase.from('lessons').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(100);
+  const { data, error } = await sb.from('lessons').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(100);
   if (error) { console.warn('Cloud load failed:', error.message); return []; }
   return data || [];
 }
