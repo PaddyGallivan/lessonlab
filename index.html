@@ -6417,22 +6417,25 @@ function openHistoryPanel() {
 
 // FEATURE 3: AUTO-BACKUP
 function autoBackup() {
-  if (state.lessons.length === 0) return;
-  const backup = state.lessons.map(l => ({
-    week: l.week,
-    title: l.title,
-    li: l.li,
-    notes: l.notes || '',
-    data: l.data,
-    html: l.html
-  }));
-  try {
-    localStorage.setItem('lessonlab_backup', JSON.stringify(backup));
-    localStorage.setItem('lessonlab_backup_time', new Date().toISOString());
-  } catch(e) {
-    // localStorage full - silently fail
-    console.warn('Auto-backup failed: storage full');
-  }
+  // Defer backup to avoid blocking UI thread after lesson generation
+  setTimeout(() => {
+    if (state.lessons.length === 0) return;
+    const backup = state.lessons.map(l => ({
+      week: l.week,
+      title: l.title,
+      li: l.li,
+      notes: l.notes || '',
+      data: l.data,
+      html: l.html
+    }));
+    try {
+      localStorage.setItem('lessonlab_backup', JSON.stringify(backup));
+      localStorage.setItem('lessonlab_backup_time', new Date().toISOString());
+    } catch(e) {
+      // localStorage full - silently fail
+      console.warn('Auto-backup failed: storage full');
+    }
+  }, 50);
 }
 
 function restoreBackup() {
