@@ -2450,7 +2450,7 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
   }
 
   // ── VISUAL ART ──────────────────────────────────────────────
-  if (subj === 'visual-art') {
+  else if (subj === 'visual-art') {
     const artWeeks = {
       painting: [
         {t:`Discovering ${F}: Looking at Artists`, li:`identify how artists use colour and brushwork in ${f} artworks`, sc:['I can describe colours I see in an artwork','I can name a painting technique','I can share my opinion about an artwork'], eq:'Visual references/prints, sketchbooks, pencils'},
@@ -2523,7 +2523,7 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
   }
 
   // ── FRENCH ──────────────────────────────────────────────────
-  if (subj === 'french') {
+  else if (subj === 'french') {
     const frWeeks = {
       greetings: [
         {t:`Bonjour! Learning to Greet in French`, li:`greet others and introduce myself in French`, sc:['I can say bonjour and au revoir','I can say je m\u2019appelle + my name','I can ask comment tu t\u2019appelles?'], eq:'Name tags, flashcards, greeting poster'},
@@ -2585,7 +2585,7 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
   }
 
   // ── MUSIC ──────────────────────────────────────────────────
-  if (subj === 'music') {
+  else if (subj === 'music') {
     const musWeeks = {
       rhythm: [
         {t:`Finding the Beat: Steady Pulse`, li:`keep a steady beat using body percussion`, sc:['I can clap a steady beat','I can keep the beat while music plays','I can stop and start on the signal'], eq:'Audio player, rhythm cards'},
@@ -2634,7 +2634,7 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
   }
 
   // ── DRAMA ──────────────────────────────────────────────────
-  if (subj === 'drama') {
+  else if (subj === 'drama') {
     const dramaWeeks = {
       improvisation: [
         {t:`Drama Warm-ups & Focus Games`, li:`participate in drama warm-ups with focus and energy`, sc:['I can follow instructions quickly','I can stay focused during the game','I can use my body and voice expressively'], eq:'Open space, music for transitions'},
@@ -2684,7 +2684,7 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
 
 
   // ── LITERACY ──────────────────────────────────────────────
-  if (subj === 'literacy') {
+  else if (subj === 'literacy') {
     const litWeeks = {
       'reading-comp': [
         {t:`Activating Prior Knowledge for ${F}`, li:'activate prior knowledge before reading a text', sc:['I can think about what I already know about a topic','I can make connections to my own experience','I can share predictions about a text'], eq:'Class text, KWL chart, whiteboards, anchor chart'},
@@ -2731,7 +2731,7 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
 
 
   // ── NUMERACY ──────────────────────────────────────────────
-  if (subj === 'numeracy') {
+  else if (subj === 'numeracy') {
     const numWeeks = {
       'number-place-value': [
         {t:'Counting Patterns: Forwards and Backwards', li:'count forwards and backwards from any starting number', sc:['I can count forwards by 1s, 2s, 5s, 10s','I can count backwards from a given number','I can identify the pattern in a counting sequence'], eq:'Number lines, hundred charts, counters, whiteboards'},
@@ -2778,7 +2778,7 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
 
 
   // ── STEM / SCIENCE ──────────────────────────────────────────
-  if (subj === 'stem') {
+  else if (subj === 'stem') {
     const stemWeeks = {
       'biological': [
         {t:'What Is Living? Sorting Living and Non-Living', li:'identify characteristics of living things', sc:['I can name 3 characteristics of living things','I can sort objects into living and non-living','I can explain why something is living or non-living'], eq:'Sorting mats, picture cards, magnifying glasses, specimens'},
@@ -2824,7 +2824,7 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
   }
 
   // ── GENERIC FALLBACK ──────────────────────────────────────
-  return {
+  else return {
     title: `${F}: Week ${w}`,
     li: `develop skills and understanding in ${f}`,
     sc: ['I can participate actively\nI can demonstrate developing skills\nI can reflect on my learning'],
