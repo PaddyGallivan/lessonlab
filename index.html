@@ -1244,6 +1244,54 @@
       }
     }
 
+    /* MY LESSONS (Cloud Dashboard) */
+    .cloud-panel { padding: 20px 40px; max-width: 1200px; margin: 0 auto; }
+    .cloud-panel h2 { color: var(--pri); margin-bottom: 4px; }
+    .cloud-panel .subtitle { color: #666; margin-bottom: 20px; font-size: 14px; }
+    .cloud-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .cloud-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      transition: box-shadow 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .cloud-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); transform: translateY(-2px); }
+    .cloud-card .cc-subject {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+      background: var(--pri);
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .cloud-card .cc-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .cloud-card .cc-meta { font-size: 12px; color: #888; margin-bottom: 8px; }
+    .cloud-card .cc-li { font-size: 13px; color: #555; font-style: italic; }
+    .cloud-card .cc-actions { margin-top: 12px; display: flex; gap: 8px; }
+    .cloud-card .cc-actions button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cloud-card .cc-actions button:hover { background: var(--light); }
+    .cloud-card .cc-actions button.danger { color: #C62828; border-color: #FFCDD2; }
+    .cloud-card .cc-actions button.danger:hover { background: #FFEBEE; }
+    .cloud-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #888;
+    }
+    .cloud-empty h3 { color: var(--text); margin-bottom: 8px; }
     /* AUTH MODAL */
     .auth-overlay {
       display: none;
@@ -1362,6 +1410,15 @@
     <button class="settings-btn" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{key:'?',shiftKey:true}))" title="Keyboard shortcuts" style="padding:8px 10px;">?</button>
   </div>
 </header>
+
+<!-- MY LESSONS PANEL (Cloud Dashboard) -->
+<div id="cloudPanel" class="cloud-panel" style="display:none;">
+  <a href="#" onclick="goPanel('landing'); return false;" style="color:var(--pri); text-decoration:none; font-size:14px; display:inline-block; margin-bottom:16px;">← Back to subjects</a>
+  <h2>☁️ My Lessons</h2>
+  <p class="subtitle">Your lesson plans saved to the cloud — accessible from any device</p>
+  <div id="cloudGrid" class="cloud-grid"></div>
+</div>
+
 
 <!-- AUTH MODAL -->
 <div class="auth-overlay" id="authOverlay">
@@ -2106,6 +2163,7 @@ function showAppLoggedIn() {
   const schoolEl = document.getElementById('headerSchool');
   if (schoolEl && currentUser.profile && currentUser.profile.school_name) schoolEl.textContent = currentUser.profile.school_name;
   if (typeof showToast === 'function') showToast('Signed in as ' + (currentUser.email || ''), 'success');
+  updateCloudSection();
 }
 
 function showAppLoggedOut() {
@@ -2113,6 +2171,7 @@ function showAppLoggedOut() {
   const loginBtn = document.getElementById('authLoginBtn');
   if (pill) pill.style.display = 'none';
   if (loginBtn) loginBtn.style.display = 'block';
+  updateCloudSection();
 }
 
 function showAppWithoutAuth() {
@@ -2141,6 +2200,65 @@ async function loadLessonsFromCloud() {
   if (error) { console.warn('Cloud load failed:', error.message); return []; }
   return data || [];
 }
+
+// -- MY LESSONS CLOUD DASHBOARD --
+async function openCloudPanel() {
+  goPanel('cloud');
+  document.getElementById('cloudPanel').style.display = 'block';
+  const grid = document.getElementById('cloudGrid');
+  grid.innerHTML = '<div style="text-align:center;padding:40px;color:#888;">Loading your lessons...</div>';
+
+  const lessons = await loadLessonsFromCloud();
+
+  if (!lessons || lessons.length === 0) {
+    grid.innerHTML = '<div class="cloud-empty"><h3>No lessons saved yet</h3><p>Generate a lesson and it will automatically save to the cloud when you\'re signed in.</p><button onclick="goPanel(\'landing\')" style="margin-top:16px;padding:10px 24px;background:var(--pri);color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">Start Planning</button></div>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  lessons.forEach(lesson => {
+    const card = document.createElement('div');
+    card.className = 'cloud-card';
+    const date = new Date(lesson.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' });
+    card.innerHTML =
+      '<span class="cc-subject">' + (lesson.subject || 'Unknown') + '</span>' +
+      '<div class="cc-title">' + (lesson.title || 'Untitled') + '</div>' +
+      '<div class="cc-meta">' + (lesson.year_level || '') + ' \u00B7 Week ' + (lesson.week || '?') + ' \u00B7 ' + date + '</div>' +
+      '<div class="cc-li">' + (lesson.learning_intention || '') + '</div>' +
+      '<div class="cc-actions">' +
+        '<button onclick="deleteCloudLesson(\'' + lesson.id + '\', this)">Delete</button>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+async function deleteCloudLesson(id, btn) {
+  if (!confirm('Delete this lesson from the cloud?')) return;
+  if (!sb || !currentUser) return;
+  const { error } = await sb.from('lessons').delete().eq('id', id).eq('user_id', currentUser.id);
+  if (error) { if (typeof showToast === 'function') showToast('Delete failed: ' + error.message, 'warning'); return; }
+  btn.closest('.cloud-card').remove();
+  if (typeof showToast === 'function') showToast('Lesson deleted', 'success');
+  const grid = document.getElementById('cloudGrid');
+  if (grid && grid.children.length === 0) {
+    grid.innerHTML = '<div class="cloud-empty"><h3>No lessons saved</h3><p>Generate a lesson and it will save automatically.</p></div>';
+  }
+}
+
+function updateCloudSection() {
+  const section = document.getElementById('cloudSection');
+  const quickGrid = document.getElementById('cloudQuickGrid');
+  if (section && quickGrid) {
+    if (currentUser) {
+      section.style.display = 'block';
+      quickGrid.style.display = 'block';
+    } else {
+      section.style.display = 'none';
+      quickGrid.style.display = 'none';
+    }
+  }
+}
+
 
 
 // ============================================================================
@@ -3658,6 +3776,7 @@ ${d.grouping ? `<div style="margin-top:4px;padding:6px 8px;background:#E8F5E9;bo
 
 function goPanel(name) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  var cp = document.getElementById('cloudPanel'); if (cp) cp.style.display = 'none';
   document.getElementById(name + 'Panel').classList.add('active');
 }
 
@@ -3826,6 +3945,24 @@ function initSubjects() {
     subjectGrid.appendChild(card);
   });
   grid.appendChild(subjectGrid);
+
+  // --- MY LESSONS CLOUD SECTION ---
+  const cloudSection = document.createElement('div');
+  cloudSection.id = 'cloudSection';
+  cloudSection.style.cssText = 'font-size:13px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-left:4px;display:none;';
+  cloudSection.textContent = 'MY LESSONS \u2601\uFE0F';
+  grid.appendChild(cloudSection);
+
+  const cloudQuickGrid = document.createElement('div');
+  cloudQuickGrid.id = 'cloudQuickGrid';
+  cloudQuickGrid.style.cssText = 'display:none;margin-bottom:24px;';
+  const cloudBtn = document.createElement('button');
+  cloudBtn.style.cssText = 'display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#1565C0,#42A5F5);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(21,101,192,0.3);transition:all 0.2s;';
+  cloudBtn.textContent = '\u2601\uFE0F View My Saved Lessons';
+  cloudBtn.onclick = () => openCloudPanel();
+  cloudQuickGrid.appendChild(cloudBtn);
+  grid.appendChild(cloudQuickGrid);
+
 
   // --- PLANNING TOOLS HEADING ---
   const toolsHeading = document.createElement('div');
