@@ -2056,7 +2056,7 @@ async function initAuth() {
 }
 
 async function loadProfile() {
-  if (!supabase || !currentUser) return;
+  if (!sb || !currentUser) return;
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
   if (data) {
     currentUser.profile = data;
@@ -2180,7 +2180,7 @@ function showAppWithoutAuth() {
 }
 
 async function saveLessonToCloud(lessonData) {
-  if (!supabase || !currentUser) return null;
+  if (!sb || !currentUser) return null;
   const record = {
     user_id: currentUser.id,
     school_id: currentUser.profile ? currentUser.profile.school_id : null,
@@ -2195,7 +2195,7 @@ async function saveLessonToCloud(lessonData) {
 }
 
 async function loadLessonsFromCloud() {
-  if (!supabase || !currentUser) return [];
+  if (!sb || !currentUser) return [];
   const { data, error } = await sb.from('lessons').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(100);
   if (error) { console.warn('Cloud load failed:', error.message); return []; }
   return data || [];
@@ -4234,21 +4234,24 @@ function generateSingle() {
     logo: typeof logoData !== 'undefined' ? logoData : ''
   };
 
-  const html = buildHTML(fullData, state.subjectCfg, cds);
-  state.lessons = [{ week: weekNum, title: lessonData.title, li: lessonData.li, html, data: fullData }];
+  // Defer heavy rendering to avoid blocking the main thread
+  setTimeout(() => {
+    const html = buildHTML(fullData, state.subjectCfg, cds);
+    state.lessons = [{ week: weekNum, title: lessonData.title, li: lessonData.li, html, data: fullData }];
 
-  document.getElementById('progressFill').style.width = '100%';
-  displayResults();
-  logHistory('Generated single lesson', lessonData.title + ' (' + state.subjectCfg.name + ', Week ' + weekNum + ')');
-  saveLastUsed();
-  // Save to cloud
-  if (currentUser && state.lessons.length > 0) {
-    const lastLesson = state.lessons[state.lessons.length - 1];
-    saveLessonToCloud(lastLesson.data).then(saved => {
-      if (saved && typeof showToast === 'function') showToast('Saved to cloud', 'success');
-    });
-  }
-  goPanel('results');
+    document.getElementById('progressFill').style.width = '100%';
+    displayResults();
+    logHistory('Generated single lesson', lessonData.title + ' (' + state.subjectCfg.name + ', Week ' + weekNum + ')');
+    saveLastUsed();
+    // Save to cloud
+    if (currentUser && state.lessons.length > 0) {
+      const lastLesson = state.lessons[state.lessons.length - 1];
+      saveLessonToCloud(lastLesson.data).then(saved => {
+        if (saved && typeof showToast === 'function') showToast('Saved to cloud', 'success');
+      });
+    }
+    goPanel('results');
+  }, 50);
 }
 
 function generateAll() {
