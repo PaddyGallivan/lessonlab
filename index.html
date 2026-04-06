@@ -6983,6 +6983,57 @@ document.getElementById('schoolTemplateModal').onclick = (e) => {
   }
 };
 
+// History modal listeners
+document.getElementById('historyClose').onclick = () => {
+  document.getElementById('historyModal').classList.remove('show');
+};
+document.getElementById('historyModal').onclick = (e) => {
+  if (e.target === document.getElementById('historyModal')) {
+    document.getElementById('historyModal').classList.remove('show');
+  }
+};
+document.getElementById('clearHistoryBtn').onclick = () => {
+  if (confirm('Clear all history?')) {
+    state.history = [];
+    localStorage.setItem('lessonlab_history', '[]');
+    openHistoryPanel();
+    if (typeof showToast === 'function') showToast('History cleared', 'info');
+  }
+};
+
+// School Template button listeners
+document.getElementById('stSaveSubjectBtn').onclick = saveSubjectRoutines;
+document.getElementById('stApplyAllBtn').onclick = applyToAllSubjects;
+document.getElementById('stExportBtn').onclick = exportSchoolTemplate;
+document.getElementById('stImportBtn').onclick = () => document.getElementById('stImportFile').click();
+document.getElementById('stImportFile').onchange = importSchoolTemplate;
+document.getElementById('stResetBtn').onclick = resetSchoolTemplate;
+document.getElementById('stLogoUpload').onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const template = getSchoolTemplate() || {};
+      template.logo = event.target.result;
+      saveSchoolTemplate(template);
+      if (typeof showToast === 'function') showToast('Logo updated', 'success');
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+// Multi-school profile button listeners
+if (document.getElementById('stAddSchoolBtn')) {
+  document.getElementById('stAddSchoolBtn').onclick = addNewSchoolProfile;
+}
+if (document.getElementById('stDeleteSchoolBtn')) {
+  document.getElementById('stDeleteSchoolBtn').onclick = deleteCurrentSchoolProfile;
+}
+
+// Initialize multi-school profiles
+migrateToProfiles();
+populateProfileSwitcher();
+
 // Restore school template on load
 const savedTemplate = getSchoolTemplate();
 if (savedTemplate) applySchoolTemplate(savedTemplate);
@@ -7017,5 +7068,7 @@ if (savedTerm) {
 }
 
 </script>
+
+<div class="toast-container" id="toastContainer"></div>
 </body>
 </html>
