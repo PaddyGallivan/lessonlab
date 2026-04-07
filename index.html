@@ -2749,6 +2749,56 @@ ${d.grouping ? `<div style="margin-top:4px;padding:6px 8px;background:#E8F5E9;bo
   return pages.join('');
 }
 
+// ============================================================================
+// WEB WORKER FOR buildHTML - eliminates UI freeze during generation
+// ============================================================================
+
+var _buildWorker = null;
+var _buildCallId = 0;
+var _buildCallbacks = {};
+
+function initBuildWorker() {
+  try {
+    var fnStr = buildHTML.toString();
+    var code = 'var SUBJ_CFG={};var SCAFFOLDS={};var buildFn=' + fnStr + ';self.onmessage=function(e){var d=e.data;if(d.subjCfg)SUBJ_CFG=d.subjCfg;if(d.scaffolds)SCAFFOLDS=d.scaffolds;var html=buildFn(d.d,d.cfg,d.cds);self.postMessage({id:d.id,html:html});};';
+    var blob = new Blob([code], {type: 'application/javascript'});
+    _buildWorker = new Worker(URL.createObjectURL(blob));
+    _buildWorker.onmessage = function(e) {
+      var cb = _buildCallbacks[e.data.id];
+      if (cb) { cb(e.data.html); delete _buildCallbacks[e.data.id]; }
+    };
+    _buildWorker.onerror = function(err) {
+      console.warn('Build worker error:', err);
+      _buildWorker = null;
+    };
+  } catch(e) {
+    console.warn('Worker init failed, sync fallback:', e);
+    _buildWorker = null;
+  }
+}
+
+function buildHTMLAsync(d, cfg, cds) {
+  return new Promise(function(resolve) {
+    if (!_buildWorker) { resolve(buildHTML(d, cfg, cds)); return; }
+    var id = ++_buildCallId;
+    _buildCallbacks[id] = resolve;
+    _buildWorker.postMessage({
+      id: id, d: d, cfg: cfg, cds: cds,
+      subjCfg: SUBJ_CFG,
+      scaffolds: typeof SCAFFOLDS !== 'undefined' ? SCAFFOLDS : {}
+    });
+    setTimeout(function() {
+      if (_buildCallbacks[id]) {
+        console.warn('Worker timeout, sync fallback');
+        delete _buildCallbacks[id];
+        resolve(buildHTML(d, cfg, cds));
+      }
+    }, 10000);
+  });
+}
+
+initBuildWorker();
+
 
 // ============================================================================
 // UI FUNCTIONS
@@ -2915,30 +2965,36 @@ function generateAll() {
   }
 
   state.lessons = [];
-  const weeks = parseInt(document.getElementById('scopeWeeks').value) || 10;
-  const startWeek = parseInt(document.getElementById('startingWeek').value) || 1;
+  var weeks = parseInt(document.getElementById('scopeWeeks').value) || 10;
+  var startWeek = parseInt(document.getElementById('startingWeek').value) || 1;
 
-  let week = startWeek;
-  let count = 0;
+  document.getElementById('progressFill').style.width = '0%';
+  document.body.style.cursor = 'wait';
+  goPanel('results');
 
-  const interval = setInterval(() => {
+  var count = 0;
+  var week = startWeek;
+
+  function processNext() {
     if (count >= weeks) {
-      clearInterval(interval);
       displayResults();
+      document.body.style.cursor = 'default';
       return;
     }
 
-    const focus = state.selectedFocuses[count % state.selectedFocuses.length];
-    const lessonData = generateLesson(state.subject, state.unit, focus, week, weeks);
-    const cds = (CD[state.subject] && CD[state.subject][state.yearLevel]) ? CD[state.subject][state.yearLevel] : [];
+    var curWeek = week;
+    var curCount = count;
+    var focus = state.selectedFocuses[curCount % state.selectedFocuses.length];
+    var lessonData = generateLesson(state.subject, state.unit, focus, curWeek, weeks);
+    var cds = (CD[state.subject] && CD[state.subject][state.yearLevel]) ? CD[state.subject][state.yearLevel] : [];
 
-    const fullData = {
+    var fullData = {
       school: state.school,
       state: state.state,
       subject: state.subjectCfg.name,
       year: state.yearLevel,
       term: state.term,
-      week: week,
+      week: curWeek,
       duration: state.duration,
       title: lessonData.title,
       li: lessonData.li,
@@ -2948,17 +3004,16 @@ function generateAll() {
       logo: logoData
     };
 
-    const html = buildHTML(fullData, state.subjectCfg, cds);
-    state.lessons.push({ week, title: lessonData.title, li: lessonData.li, html, data: fullData });
+    buildHTMLAsync(fullData, state.subjectCfg, cds).then(function(html) {
+      state.lessons.push({ week: curWeek, title: lessonData.title, li: lessonData.li, html: html, data: fullData });
+      document.getElementById('progressFill').style.width = (((curCount + 1) / weeks) * 100) + '%';
+      count++;
+      week++;
+      processNext();
+    });
+  }
 
-    const progress = ((count + 1) / weeks) * 100;
-    document.getElementById('progressFill').style.width = progress + '%';
-
-    count++;
-    week++;
-  }, 200);
-
-  goPanel('results');
+  processNext();
 }
 
 function displayResults() {
