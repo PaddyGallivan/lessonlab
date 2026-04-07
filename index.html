@@ -6465,8 +6465,8 @@ function checkTierAccess(subject) {
  * Update subject card locking based on tier
  */
 function updateSubjectLocking() {
-  document.querySelectorAll('[data-subject]').forEach(card => {
-    const subject = card.getAttribute('data-subject');
+  document.querySelectorAll('.subject-card').forEach(card => {
+    const subject = (card.textContent.trim().split('\n').pop() || 'unknown').trim();
     const hasAccess = checkTierAccess(subject);
 
     if (!hasAccess) {
@@ -6976,10 +6976,10 @@ document.getElementById('accountSettingsBtn')?.addEventListener('click', () => {
 });
 
 // Subject card click - check tier access
-document.querySelectorAll('[data-subject]').forEach(card => {
+document.querySelectorAll('.subject-card').forEach(card => {
   const originalClick = card.onclick;
   card.addEventListener('click', function(e) {
-    const subject = this.getAttribute('data-subject');
+    const subject = (this.textContent.trim().split('\n').pop() || 'unknown').trim();
 
     if (!checkTierAccess(subject)) {
       e.preventDefault();
