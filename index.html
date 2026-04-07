@@ -6043,9 +6043,8 @@ function parseLessonText(rawText) {
   let buf = [];
 
   function flush() {
-    if (!cur) return;
     const text = buf.join('\n').replace(/^\s+|\s+$/g,'').replace(/\n{3,}/g,'\n\n');
-    if (text) result[cur] = result[cur] ? result[cur] + '\n' + text : text;
+    if (cur && text) result[cur] = result[cur] ? result[cur] + '\n' + text : text;
     buf = [];
   }
 
