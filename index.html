@@ -1545,6 +1545,39 @@ const SUBJ_CFG = {
     expectations: 'Show your thinking. Try before asking. Use materials carefully. Explain your reasoning.',
     behaviour: 'Redirect → re-model strategy use → if persistent, simplified task with teacher support.'
   }
+,
+  'science': {
+    name: 'Science',
+    full: 'Science',
+    colour: '#1E8449',
+    accent: '#27AE60',
+    icon: '\uD83D\uDD2C',
+    phases: ['Engage', 'Explore', 'Explain', 'Elaborate', 'Evaluate'],
+    times: ['5 min', '15 min', '10 min', '15 min', '5 min'],
+    entry: 'Enter quietly \u2192 sit at tables \u2192 check equipment.',
+    exit: 'Clean up equipment \u2192 wash hands \u2192 line up.',
+    entSay: 'Come in, sit down, check your equipment is ready.',
+    exSay: 'Equipment away. Wash hands. Line up quietly.',
+    signal: 'Hand up = silence. Bell = stop and listen.',
+    expectations: 'Handle equipment safely. Record observations carefully. Work cooperatively.',
+    behaviour: 'Redirect \u2192 model correct procedure \u2192 equipment privilege paused if misused.'
+  },
+  'digital_tech': {
+    name: 'Digital Tech',
+    full: 'Digital Technologies',
+    colour: '#6C3483',
+    accent: '#8E44AD',
+    icon: '\uD83D\uDCBB',
+    phases: ['Connect', 'Explicit Teaching', 'Guided Practice', 'Independent / Collaborative Work', 'Share & Reflect'],
+    times: ['5 min', '10 min', '10 min', '20 min', '5 min'],
+    entry: 'Enter quietly \u2192 log in to device \u2192 open task.',
+    exit: 'Save work \u2192 log out \u2192 close lid \u2192 line up.',
+    entSay: 'Come in, log in, open your task.',
+    exSay: 'Save your work. Log out. Close lids. Line up.',
+    signal: 'Lids down = eyes on teacher. Hand up = silence.',
+    expectations: 'Respect devices. Stay on task. Be a good digital citizen.',
+    behaviour: 'Redirect \u2192 screen check \u2192 device privilege paused if misused.'
+  }
 };
 
 const SCAFFOLDS = {
@@ -1611,6 +1644,89 @@ const SCAFFOLDS = {
     inclusion: ['Concrete materials always available', 'Number lines and reference charts', 'Chunked problems', 'Reduced quantity, same concept'],
     extension: ['Multi-step or open-ended problem', 'Create own problem for peers', 'Investigate pattern or prove a rule']
   }
+,
+  'science': {
+    enabling: [
+      'Clear routines \u2014 entry, signal, exit',
+      'Pre-teach key vocabulary',
+      'Display LI and SC',
+      'Safe investigation environment \u2014 equipment rules clear',
+      'Self-regulation \u2014 students reflect on inquiry process'
+    ],
+    instruction: [
+      'Model investigation before students attempt',
+      'Deconstruct scientific concept being taught',
+      'Think-aloud \u2014 narrate scientific reasoning',
+      'Worked example with full commentary'
+    ],
+    practice: [
+      'Structured exploration with teacher guidance',
+      'Predict-observe-explain before independent work',
+      'Freeze and feedback moments'
+    ],
+    game: [
+      'Scaffolded investigation before open-ended inquiry',
+      'Partner or small group before whole class',
+      'Choice of challenge level'
+    ],
+    reflection: [
+      'Revisit LI \u2014 what did we learn?',
+      'Self-assessment against SC',
+      'Peer feedback \u2014 one thing done well / one to develop'
+    ],
+    inclusion: [
+      'Predictable routine',
+      'Chunked instructions',
+      'Parallel lower-demand task',
+      'Sensory break if needed'
+    ],
+    extension: [
+      'Design own investigation',
+      'Research role (lead scientist, recorder)',
+      'Cross-curricular connections'
+    ]
+  },
+  'digital_tech': {
+    enabling: [
+      'Clear routines \u2014 login, signal, logout',
+      'Pre-teach key vocabulary',
+      'Display LI and SC',
+      'Safe digital environment \u2014 online safety rules clear',
+      'Self-regulation \u2014 students reflect on digital choices'
+    ],
+    instruction: [
+      'Model skill before students attempt',
+      'Deconstruct algorithm or concept being taught',
+      'Think-aloud \u2014 narrate problem-solving decisions',
+      'Worked example with full commentary'
+    ],
+    practice: [
+      'Structured exploration with teacher guidance',
+      'Pair programming before independent work',
+      'Debug and feedback moments'
+    ],
+    game: [
+      'Scaffolded task before open-ended creation',
+      'Partner or small group before whole class',
+      'Choice of challenge level'
+    ],
+    reflection: [
+      'Revisit LI \u2014 what did we learn?',
+      'Self-assessment against SC',
+      'Peer feedback \u2014 one thing done well / one to develop'
+    ],
+    inclusion: [
+      'Predictable routine',
+      'Chunked instructions',
+      'Parallel lower-demand task',
+      'Screen break if needed'
+    ],
+    extension: [
+      'Add complexity or features',
+      'Leadership role (debug helper, presenter)',
+      'Create for an authentic audience'
+    ]
+  }
 };
 
 const UNITS = {
@@ -1671,6 +1787,60 @@ const UNITS = {
     { id: 'shape', name: 'Shape & Space', skills: ['2D shapes', '3D objects', 'Symmetry', 'Position', 'Transformation', 'Angles', 'Properties', 'Spatial reasoning'], desc: 'Explore geometry and spatial concepts', focuses: ['2D Shapes', '3D Objects', 'Symmetry', 'Position & Direction', 'Angles'] },
     { id: 'data', name: 'Statistics & Probability', skills: ['Data collection', 'Graphing', 'Interpretation', 'Chance', 'Prediction', 'Comparison', 'Analysis', 'Reasoning'], desc: 'Collect, represent and interpret data', focuses: ['Picture Graphs', 'Bar Graphs', 'Chance Events', 'Data Investigation', 'Surveys'] },
     { id: 'patterns', name: 'Patterns & Algebra', skills: ['Pattern recognition', 'Repeating patterns', 'Growing patterns', 'Number patterns', 'Rules', 'Equivalence', 'Generalisation', 'Problem solving'], desc: 'Explore patterns and algebraic thinking', focuses: ['Repeating Patterns', 'Growing Patterns', 'Number Patterns', 'Rules & Relationships', 'Equivalence'] }
+  ]
+,
+  'science': [
+    {
+      id: 'biological',
+      name: 'Biological Sciences',
+      skills: ['Observing', 'Classifying', 'Comparing', 'Recording', 'Predicting', 'Investigating'],
+      desc: 'Explore living things, their features, needs and life cycles',
+      focuses: ['Living vs Non-living', 'Plant Parts & Growth', 'Animal Features', 'Habitats', 'Life Cycles', 'Food Chains']
+    },
+    {
+      id: 'chemical',
+      name: 'Chemical Sciences',
+      skills: ['Observing', 'Predicting', 'Testing', 'Recording', 'Explaining', 'Comparing'],
+      desc: 'Investigate materials, their properties and changes',
+      focuses: ['Properties of Materials', 'Solids Liquids Gases', 'Mixing & Separating', 'Reversible & Irreversible Changes', 'Heating & Cooling']
+    },
+    {
+      id: 'physical',
+      name: 'Physical Sciences',
+      skills: ['Observing', 'Measuring', 'Testing', 'Recording', 'Explaining', 'Predicting'],
+      desc: 'Explore forces, energy, light and sound',
+      focuses: ['Pushes & Pulls', 'Friction', 'Magnets', 'Light & Shadow', 'Sound', 'Heat Transfer', 'Electricity']
+    },
+    {
+      id: 'earth_space',
+      name: 'Earth and Space Sciences',
+      skills: ['Observing', 'Recording', 'Comparing', 'Modelling', 'Researching', 'Explaining'],
+      desc: 'Explore weather, seasons, Earth resources and space',
+      focuses: ['Weather Patterns', 'Seasons', 'Day & Night', 'Earth Resources', 'Water Cycle', 'Solar System']
+    }
+  ],
+  'digital_tech': [
+    {
+      id: 'digital_systems',
+      name: 'Digital Systems',
+      skills: ['Identifying', 'Exploring', 'Describing', 'Comparing', 'Connecting', 'Explaining'],
+      desc: 'Explore hardware, software and networks',
+      focuses: ['Hardware Components', 'Software & Apps', 'Input & Output', 'Networks', 'Data Storage', 'Digital Security']
+    },
+    {
+      id: 'data_info',
+      name: 'Data and Information',
+      skills: ['Collecting', 'Organising', 'Representing', 'Interpreting', 'Presenting', 'Evaluating'],
+      desc: 'Collect, organise and present data using digital tools',
+      focuses: ['Collecting Data', 'Sorting & Patterns', 'Data Representation', 'Spreadsheets', 'Digital Presentations', 'Online Safety']
+    },
+    {
+      id: 'creating_solutions',
+      name: 'Creating Digital Solutions',
+      skills: ['Designing', 'Coding', 'Testing', 'Debugging', 'Collaborating', 'Reflecting'],
+      desc: 'Design, create and evaluate digital solutions',
+      focuses: ['Algorithms', 'Visual Programming', 'Branching & Loops', 'User Interface Design', 'Testing & Debugging', 'Game Design']
+    }
   ]
 };
 
@@ -1971,7 +2141,116 @@ let state = {
   startWeek: 1,
   lessons: [],
   lessonVersions: {}
-};
+,
+
+  science: {
+    'Foundation\u2013Level 2': [
+      {code:'VC2S2H01', strand:'Science as a Human Endeavour', desc:'scientific knowledge is based on observations of the natural world using the senses, and scientific tools and instruments'},
+      {code:'VC2S2H02', strand:'Science as a Human Endeavour', desc:'science is used by people in their daily lives, including asking questions and using patterns from observations of the world around them to make scientific predictions'},
+      {code:'VC2S2U01', strand:'Science Understanding', desc:'plants and animals have observable features that can be used to group them in different ways'},
+      {code:'VC2S2U02', strand:'Science Understanding', desc:'plants and animals have basic needs, including air, water, food and shelter; the places where they live meet those needs'},
+      {code:'VC2S2U03', strand:'Science Understanding', desc:'plants and animals have external features that perform different functions to enable their survival'},
+      {code:'VC2S2U04', strand:'Science Understanding', desc:'objects can be made of one or more different materials; these materials have observable properties that can be described'},
+      {code:'VC2S2U05', strand:'Science Understanding', desc:'materials can be manipulated in a range of ways'},
+      {code:'VC2S2U06', strand:'Science Understanding', desc:'a push or pull is needed to make an object move, speed up, slow down or change direction'},
+      {code:'VC2S2U07', strand:'Science Understanding', desc:'sounds are produced by vibrations, which travel away from their sources and can be described by their characteristics'},
+      {code:'VC2S2U08', strand:'Science Understanding', desc:'light is needed for us to see; light comes from a range of sources, including the sun, and can be blocked by objects to form shadows'},
+      {code:'VC2S2U09', strand:'Science Understanding', desc:'some properties of common materials can be changed by heating, cooling, bending, stretching and twisting'},
+      {code:'VC2S2U10', strand:'Science Understanding', desc:'living things go through a series of changes during their lives; the sequence and nature of these changes varies for different living things'},
+      {code:'VC2S2U11', strand:'Science Understanding', desc:'Earth\'s resources are used in a variety of ways and their use impacts the environment'},
+      {code:'VC2S2U12', strand:'Science Understanding', desc:'weather observations can be used to identify daily and seasonal changes; the weather affects everyday life'},
+      {code:'VC2S2I01', strand:'Science Inquiry', desc:'pose questions and make predictions based on observations and experiences'},
+      {code:'VC2S2I02', strand:'Science Inquiry', desc:'suggest and follow safe procedures to investigate questions and test predictions'},
+      {code:'VC2S2I03', strand:'Science Inquiry', desc:'use informal measurements to make and compare observations and explore patterns in data'},
+      {code:'VC2S2I04', strand:'Science Inquiry', desc:'sort and record information and data using methods that include tables, drawings, provided templates and digital technologies'},
+      {code:'VC2S2I05', strand:'Science Inquiry', desc:'compare observations with predictions and suggest possible reasons for findings'},
+      {code:'VC2S2I06', strand:'Science Inquiry', desc:'communicate ideas, explanations and findings in a range of ways'}
+    ],
+    'Years 3-4': [
+      {code:'VC2S4H01', strand:'Science as a Human Endeavour', desc:'data from observations obtained through scientific inquiry can be used to develop explanations of natural phenomena'},
+      {code:'VC2S4H02', strand:'Science as a Human Endeavour', desc:'scientific knowledge, skills and data can be used by people to explain how they will meet a need or solve a problem'},
+      {code:'VC2S4U01', strand:'Science Understanding', desc:'living things have characteristics that distinguish them from non-living things and things that were once living, including fossils'},
+      {code:'VC2S4U02', strand:'Science Understanding', desc:'plants and animals have different life cycles; offspring are similar, but not identical, to their parents'},
+      {code:'VC2S4U03', strand:'Science Understanding', desc:'consumers, producers and decomposers have different roles and interactions within a habitat; food chains can be used to represent feeding relationships'},
+      {code:'VC2S4U04', strand:'Science Understanding', desc:'solids, liquids and gases have observable properties; adding or removing heat energy leads to a change of state'},
+      {code:'VC2S4U05', strand:'Science Understanding', desc:'the properties of natural and made materials, including fibres, metals, glass and plastics, influence their use'},
+      {code:'VC2S4U06', strand:'Science Understanding', desc:'forces can be exerted by one object on another through direct contact or from a distance'},
+      {code:'VC2S4U07', strand:'Science Understanding', desc:'light from a source can be absorbed, reflected or refracted depending on the properties of the surface it hits'},
+      {code:'VC2S4U08', strand:'Science Understanding', desc:'light energy is needed to make an electrical circuit work; an electrical circuit provides a means of transferring and transforming electricity'},
+      {code:'VC2S4U09', strand:'Science Understanding', desc:'the surface of Earth changes over time as a result of natural processes and human activity'},
+      {code:'VC2S4U10', strand:'Science Understanding', desc:'Earth is part of a system of planets orbiting around a star (the sun); Earth rotates on its axis in relation to the sun'},
+      {code:'VC2S4I01', strand:'Science Inquiry', desc:'pose questions to explore observed patterns and relationships, and make predictions based on observations'},
+      {code:'VC2S4I02', strand:'Science Inquiry', desc:'suggest and follow safe procedures to investigate questions and test predictions, including using fair testing'},
+      {code:'VC2S4I03', strand:'Science Inquiry', desc:'use formal measurements and digital technologies to make and record observations accurately'},
+      {code:'VC2S4I04', strand:'Science Inquiry', desc:'organise, record and represent data in a range of formats, including tables, diagrams, column graphs and simple digital databases'},
+      {code:'VC2S4I05', strand:'Science Inquiry', desc:'compare data with predictions and use evidence to develop explanations of scientific phenomena'},
+      {code:'VC2S4I06', strand:'Science Inquiry', desc:'communicate ideas, explanations and findings using scientific language and representations for defined audiences'}
+    ],
+    'Years 5-6': [
+      {code:'VC2S6H01', strand:'Science as a Human Endeavour', desc:'scientific knowledge changes over time, often resulting from collaboration or by building on the work of others'},
+      {code:'VC2S6H02', strand:'Science as a Human Endeavour', desc:'scientific knowledge, skills and data can be used by individuals and communities to identify problems, consider responses and make decisions'},
+      {code:'VC2S6U01', strand:'Science Understanding', desc:'habitats can be described by their physical conditions; changing the physical conditions of a habitat may affect the growth and survival of organisms'},
+      {code:'VC2S6U02', strand:'Science Understanding', desc:'organisms have evolved over time, as seen in fossils and scientific records; the structural features and behaviours of living organisms enable them to thrive'},
+      {code:'VC2S6U03', strand:'Science Understanding', desc:'the observable properties of matter can be explained by modelling the motion and arrangement of their particles; mixtures can be formed by combining substances'},
+      {code:'VC2S6U04', strand:'Science Understanding', desc:'changes to materials can be reversible, such as a change of state, or irreversible, including burning and rusting'},
+      {code:'VC2S6U05', strand:'Science Understanding', desc:'energy from a range of sources can be transformed from one form to another to generate electricity'},
+      {code:'VC2S6U06', strand:'Science Understanding', desc:'contact and non-contact forces, including friction, act on objects at rest or in motion and can change shape, speed and direction'},
+      {code:'VC2S6U07', strand:'Science Understanding', desc:'the growth and survival of organisms are affected by the physical conditions of their environment'},
+      {code:'VC2S6U08', strand:'Science Understanding', desc:'sudden geological changes or extreme weather conditions can affect the surface of Earth'},
+      {code:'VC2S6U09', strand:'Science Understanding', desc:'the relative positions and movements of Earth, the sun, the moon and other planets in the solar system can be used to explain observable phenomena'},
+      {code:'VC2S6I01', strand:'Science Inquiry', desc:'pose investigable questions to identify patterns and test relationships, including the identification of variables'},
+      {code:'VC2S6I02', strand:'Science Inquiry', desc:'plan and conduct repeatable investigations collaboratively to answer questions and test hypotheses'},
+      {code:'VC2S6I03', strand:'Science Inquiry', desc:'use equipment, including digital technologies, to measure and record data accurately'},
+      {code:'VC2S6I04', strand:'Science Inquiry', desc:'organise data and represent it in a range of formats, including tables, column graphs, line graphs and simple digital databases'},
+      {code:'VC2S6I05', strand:'Science Inquiry', desc:'analyse data and compare results with and between investigations and with predictions, identifying possible explanations'},
+      {code:'VC2S6I06', strand:'Science Inquiry', desc:'communicate ideas, explanations, findings, methods and results using scientific language and representations'}
+    ]
+  },
+
+  digital_tech: {
+    'Foundation\u2013Level 2': [
+      {code:'VC2TDI2S01', strand:'Digital Systems and Security', desc:'identify and explore digital systems including hardware and software components for a purpose'},
+      {code:'VC2TDI2S02', strand:'Digital Systems and Security', desc:'identify some data that is personal and access their school account with a recorded username and password'},
+      {code:'VC2TDI2D01', strand:'Data Information and Privacy', desc:'explore patterns in data and represent data as objects, pictures, symbols, numbers and words'},
+      {code:'VC2TDI2D02', strand:'Data Information and Privacy', desc:'explore and use the basic features of common digital tools to create, locate and communicate content'},
+      {code:'VC2TDI2D03', strand:'Data Information and Privacy', desc:'explore and use the basic features of common digital tools to share content and collaborate'},
+      {code:'VC2TDI2D04', strand:'Data Information and Privacy', desc:'recognise and discuss that some websites and apps store their personal data online'},
+      {code:'VC2TDI2C01', strand:'Creating Digital Solutions', desc:'investigate simple problems for known users that can be solved with digital systems'},
+      {code:'VC2TDI2C02', strand:'Creating Digital Solutions', desc:'follow, describe and represent algorithms involving a sequence of steps, branching (decisions) and iteration (repetition)'},
+      {code:'VC2TDI2C03', strand:'Creating Digital Solutions', desc:'create and test simple digital solutions for a given task or problem using a block coding environment'}
+    ],
+    'Years 3-4': [
+      {code:'VC2TDI4S01', strand:'Digital Systems and Security', desc:'explore and describe a range of digital systems and their peripherals for a variety of purposes'},
+      {code:'VC2TDI4S02', strand:'Digital Systems and Security', desc:'explore transmitting different types of data between digital systems'},
+      {code:'VC2TDI4S03', strand:'Digital Systems and Security', desc:'access their school account using a memorised password and explain why it should be easy to remember, but hard for others to guess'},
+      {code:'VC2TDI4D01', strand:'Data Information and Privacy', desc:'recognise different types of data and explore how the same data can be represented differently depending on the purpose'},
+      {code:'VC2TDI4D02', strand:'Data Information and Privacy', desc:'collect, organise and present different types of data using software tools to create information and solve problems'},
+      {code:'VC2TDI4D03', strand:'Data Information and Privacy', desc:'use the core features of common digital tools to create, locate and communicate content'},
+      {code:'VC2TDI4D04', strand:'Data Information and Privacy', desc:'use the core features of common digital tools to share content, plan tasks and collaborate'},
+      {code:'VC2TDI4D05', strand:'Data Information and Privacy', desc:'identify and discuss how information collected online is used by others'},
+      {code:'VC2TDI4C01', strand:'Creating Digital Solutions', desc:'investigate and define problems in terms of the data, and functional and non-functional requirements of a solution'},
+      {code:'VC2TDI4C02', strand:'Creating Digital Solutions', desc:'generate, communicate and discuss designs for a user interface for a digital system'},
+      {code:'VC2TDI4C03', strand:'Creating Digital Solutions', desc:'describe, follow and represent algorithms involving a sequence of steps, branching (decisions) and iteration (repetition)'},
+      {code:'VC2TDI4C04', strand:'Creating Digital Solutions', desc:'implement, test and modify digital solutions, including a visual program involving branching and iteration'},
+      {code:'VC2TDI4C05', strand:'Creating Digital Solutions', desc:'explain how existing digital solutions satisfy a need or solve a problem'}
+    ],
+    'Years 5-6': [
+      {code:'VC2TDI6S01', strand:'Digital Systems and Security', desc:'investigate the main internal components of common digital systems and their function'},
+      {code:'VC2TDI6S02', strand:'Digital Systems and Security', desc:'examine how digital systems form networks to transmit data'},
+      {code:'VC2TDI6S03', strand:'Digital Systems and Security', desc:'access multiple personal accounts using unique passphrases and explain the risks of password re-use'},
+      {code:'VC2TDI6D01', strand:'Data Information and Privacy', desc:'explain how digital systems represent all data using numbers and explore how data can be represented using binary'},
+      {code:'VC2TDI6D02', strand:'Data Information and Privacy', desc:'acquire and manipulate different types of data from a range of sources using software tools, including spreadsheets'},
+      {code:'VC2TDI6D03', strand:'Data Information and Privacy', desc:'analyse and visualise data using a range of software, including spreadsheets to create information and solve problems'},
+      {code:'VC2TDI6D04', strand:'Data Information and Privacy', desc:'select and use appropriate digital tools effectively to create, locate and communicate content'},
+      {code:'VC2TDI6D05', strand:'Data Information and Privacy', desc:'select and use appropriate digital tools effectively to share content online, plan tasks and collaborate'},
+      {code:'VC2TDI6D06', strand:'Data Information and Privacy', desc:'explain what personal data is stored by online systems and the risks if the data is not managed appropriately'},
+      {code:'VC2TDI6C01', strand:'Creating Digital Solutions', desc:'investigate and define problems in terms of the data, and functional and non-functional requirements of a solution'},
+      {code:'VC2TDI6C02', strand:'Creating Digital Solutions', desc:'generate, communicate and evaluate designs for a user interface for a digital system, considering sustainability'},
+      {code:'VC2TDI6C03', strand:'Creating Digital Solutions', desc:'design algorithms involving multiple alternatives (branching) and iteration (repetition)'},
+      {code:'VC2TDI6C04', strand:'Creating Digital Solutions', desc:'implement, test and modify digital solutions, including a visual program involving responses to events and variables'},
+      {code:'VC2TDI6C05', strand:'Creating Digital Solutions', desc:'explain how and why digital solutions are developed collaboratively and how existing solutions are repurposed'}
+    ]
+  }};
 
 // ============================================================================
 // PROGRESSION ENGINE
@@ -2199,6 +2478,81 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
         extension: 'Encourage complex sentences, conversations with nuance. Challenge to teach peers. Extend into reading and writing. Create cultural connections.'
       }
     };
+  }
+
+  if (subj === 'science') {
+    const sciWeeks = {
+      biological: [
+        {t:`Living Things: Observe and Classify`, li:`observe and group living things based on their features`, sc:['I can describe features of living things','I can sort living things into groups','I can explain why I grouped them that way'], eq:'Magnifying glasses, picture cards of plants/animals, sorting mats'},
+        {t:`Living Things: Needs and Habitats`, li:`identify the basic needs of living things and where they live`, sc:['I can list what plants and animals need to survive','I can describe a habitat','I can match a living thing to its habitat'], eq:'Habitat diorama materials, worksheets, video clips'},
+        {t:`Living Things: Share Our Learning`, li:`present what we have learned about living things`, sc:['I can explain how living things meet their needs','I can share my learning with the class','I can reflect on what I found interesting'], eq:'Poster materials, tablets for presentations'}
+      ],
+      chemical: [
+        {t:`Materials Around Us`, li:`explore and describe properties of everyday materials`, sc:['I can name different materials','I can describe properties like hard, soft, rough, smooth','I can group materials by their properties'], eq:'Collection of everyday objects, sorting trays, labels'},
+        {t:`Changing Materials`, li:`investigate how materials can be changed`, sc:['I can describe what happens when materials are heated or cooled','I can identify reversible and irreversible changes','I can record my observations'], eq:'Ice, candles (teacher demo), clay, paper, science journals'},
+        {t:`Materials: Share Our Findings`, li:`communicate findings about materials and their properties`, sc:['I can explain how a material changed','I can present my investigation results','I can reflect on what surprised me'], eq:'Presentation materials, science journals'}
+      ],
+      physical: [
+        {t:`Forces: Push and Pull`, li:`explore how pushes and pulls make things move`, sc:['I can identify pushes and pulls','I can predict how an object will move','I can describe how force affects movement'], eq:'Toy cars, ramps, balls, spring scales'},
+        {t:`Energy: Light and Sound`, li:`investigate sources and properties of light and sound`, sc:['I can name sources of light and sound','I can describe how sounds are made','I can explain what happens when light is blocked'], eq:'Torches, mirrors, musical instruments, tuning forks'},
+        {t:`Forces and Energy: Show What We Know`, li:`demonstrate understanding of forces and energy concepts`, sc:['I can set up a simple investigation about forces or energy','I can explain my results','I can reflect on my learning'], eq:'Investigation materials, recording sheets'}
+      ],
+      earth_space: [
+        {t:`Earth and Sky: Our World`, li:`observe and describe features of the Earth and sky`, sc:['I can describe weather patterns','I can identify features of the Earth','I can record weather observations'], eq:'Weather charts, thermometers, globes, cloud identification cards'},
+        {t:`Earth Changes: Natural Processes`, li:`explore how the Earth changes over time`, sc:['I can describe how landscapes change','I can identify natural events that change the Earth','I can compare before and after examples'], eq:'Rock samples, erosion demonstration materials, videos'},
+        {t:`Earth and Space: Present Our Learning`, li:`share what we have learned about Earth and space`, sc:['I can explain an Earth or space concept','I can present findings to an audience','I can reflect on what I learned'], eq:'Poster/digital presentation materials, models'}
+      ]
+    };
+    const weekArr = sciWeeks[unit];
+    if (weekArr && weekArr[w-1]) {
+      const wd = weekArr[w-1];
+      return {
+        title: wd.t,
+        li: wd.li,
+        sc: wd.sc.join('\n'),
+        equipment: wd.eq,
+        context: `Week ${w} of ${totalWeeks} \u2014 ${F} unit (${phase} phase).`,
+        differentiation: {
+          support: 'Use visual aids and graphic organisers. Provide word banks for science vocabulary. Pair with a science buddy. Offer sentence starters for recording observations. Allow extra time for hands-on exploration.',
+          extension: 'Design independent investigations. Research additional science concepts. Create detailed scientific diagrams. Present findings using scientific language and conventions.'
+        }
+      };
+    }
+  }
+
+  if (subj === 'digital_tech') {
+    const dtWeeks = {
+      digital_systems: [
+        {t:`What is a Digital System?`, li:`identify and explore digital systems and their parts`, sc:['I can name parts of a digital system','I can describe what hardware and software do','I can explain how a digital system helps us'], eq:'Computers, tablets, interactive whiteboard, system component labels'},
+        {t:`How Digital Systems Connect`, li:`explore how digital systems communicate and share data`, sc:['I can describe how devices connect to each other','I can explain what a network does','I can identify examples of networks in our school'], eq:'Network diagrams, devices for demonstration, unplugged activities'},
+        {t:`Digital Systems: Show What We Know`, li:`demonstrate understanding of digital systems`, sc:['I can explain the parts of a digital system','I can describe how systems connect','I can reflect on how digital systems help people'], eq:'Poster/presentation materials, devices'}
+      ],
+      data_info: [
+        {t:`What is Data?`, li:`explore how data can be collected and represented`, sc:['I can explain what data is','I can collect simple data','I can represent data using pictures or symbols'], eq:'Data collection worksheets, graphing materials, tablets'},
+        {t:`Organising and Using Data`, li:`organise data and create information to solve problems`, sc:['I can sort data into categories','I can create a simple chart or graph','I can use data to answer a question'], eq:'Spreadsheet software, graphing tools, printed datasets'},
+        {t:`Data: Share Our Findings`, li:`present data findings and reflect on the process`, sc:['I can present my data clearly','I can explain what my data shows','I can reflect on what I learned from the data'], eq:'Presentation software, printed graphs, display materials'}
+      ],
+      creating_solutions: [
+        {t:`Solving Problems with Algorithms`, li:`describe and follow algorithms to solve problems`, sc:['I can explain what an algorithm is','I can follow a sequence of steps','I can identify decisions in an algorithm'], eq:'Unplugged algorithm cards, flowchart templates, coding devices'},
+        {t:`Coding Solutions`, li:`create and test digital solutions using code`, sc:['I can create a simple program','I can test my program and find errors','I can improve my program based on testing'], eq:'Block coding platform (Scratch/Scratch Jr), tablets/computers'},
+        {t:`Digital Solutions: Share and Reflect`, li:`present and evaluate digital solutions`, sc:['I can demonstrate my digital solution','I can explain how my solution solves the problem','I can suggest improvements'], eq:'Coding devices, presentation setup, peer feedback sheets'}
+      ]
+    };
+    const weekArr = dtWeeks[unit];
+    if (weekArr && weekArr[w-1]) {
+      const wd = weekArr[w-1];
+      return {
+        title: wd.t,
+        li: wd.li,
+        sc: wd.sc.join('\n'),
+        equipment: wd.eq,
+        context: `Week ${w} of ${totalWeeks} \u2014 ${F} unit (${phase} phase).`,
+        differentiation: {
+          support: 'Use structured activities with clear step-by-step instructions. Provide visual guides and worked examples. Allow buddy work with confident peers. Offer simplified coding tasks with pre-built templates.',
+          extension: 'Challenge with open-ended problems requiring multi-step solutions. Encourage debugging and optimisation. Introduce additional coding concepts. Lead peer teaching sessions.'
+        }
+      };
+    }
   }
 
   // ── MUSIC ──────────────────────────────────────────────────
