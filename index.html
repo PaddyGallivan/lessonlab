@@ -6453,8 +6453,8 @@ document.getElementById('timerModal').onclick = (e) => {
 };
 
 // Picker event listeners
-document.getElementById('pickerToggle').onclick = openPicker;
-document.getElementById('pickerBtn').onclick = pickStudent;
+var _pt = document.getElementById('pickerToggle'); if (_pt) _pt.onclick = openPicker;
+var _pb = document.getElementById('pickerBtn'); if (_pb) _pb.onclick = pickStudent;
 document.getElementById('pickerClose').onclick = () => {
   document.getElementById('pickerModal').classList.remove('show');
 };
