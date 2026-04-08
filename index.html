@@ -5779,24 +5779,7 @@ function printStudentTracker(idx) {
   html += '.check{width:40px;}';
   html += '.footer{margin-top:10px;font-size:9px;color:#999;text-align:center;}';
   html += '@media print{body{margin:10mm;}@page{margin:10mm;}}';
-  html += '
-@media (max-width: 768px) {
-  header { flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 8px 12px; gap: 6px; }
-  .header-left { display: flex; align-items: center; gap: 8px; }
-  #header-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  #authHeader { margin-left: 0 !important; width: 100%; }
-  .header-tags { display: none; }
-  .subjects-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; padding: 0.75rem; }
-  .subject-card { padding: 1rem 0.75rem; }
-  .btn-group { flex-wrap: wrap; }
-  .result-actions { flex-wrap: wrap; gap: 0.375rem; }
-  .settings-panel { width: 100% !important; }
-}
-@media (max-width: 480px) {
-  .subjects-grid { grid-template-columns: 1fr; }
-  .settings-btn { padding: 5px 7px !important; font-size: 0.85rem; }
-  #signInBtn, #signUpBtn { padding: 5px 10px !important; font-size: 0.8rem; }
-}</style></head><body>';
+
   html += '<h1>' + (d.subject || '') + ' — Week ' + d.week + ': ' + d.title + '</h1>';
   html += '<h2>' + (d.school || '') + ' · ' + (d.year || '') + ' · ' + (d.term || '') + '</h2>';
   html += '<table><thead><tr><th class="name">Student</th><th class="check">Present</th>';
