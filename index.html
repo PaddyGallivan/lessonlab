@@ -1033,6 +1033,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 
+  <script>
+    (function() {
+      var etag = null;
+      setInterval(function() {
+        fetch(location.href, { method: 'HEAD', cache: 'no-store' })
+          .then(function(r) {
+            var v = r.headers.get('etag') || r.headers.get('last-modified');
+            if (etag && v && v !== etag) { location.reload(); }
+            if (v) etag = v;
+          }).catch(function(){});
+      }, 60000);
+    })();
+  </script>
 </head>
 <body>
 
@@ -1048,10 +1061,10 @@
     </div>
   </div>
   <div id="header-right" style="display:flex;gap:8px;align-items:center;">
-    <button class="settings-btn" id="pickerToggle" title="Random Student Picker">🎲</button>
+    
     <button class="settings-btn" id="darkModeToggle">🌙</button>
     <button class="settings-btn" id="uploadLessonBtn" title="Upload &amp; Convert Existing Lesson" onclick="showUploadLessonModal()">&#128228;</button>
-    <button class="settings-btn" id="settingsToggle">⚙ School Settings</button>
+    <button class="settings-btn" id="settingsToggle" style="display:none">⚙ School Settings</button>
     <button class="settings-btn" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{key:'?',shiftKey:true}))" title="Keyboard shortcuts" style="padding:8px 10px;">?</button>
   </div>
 
@@ -6582,6 +6595,8 @@ function updateAuthUI(user) {
 
     var accountSettingsBtn = document.getElementById('accountSettingsBtn');
     if (accountSettingsBtn) accountSettingsBtn.style.display = user ? 'block' : 'none';
+        var settingsToggleBtn = document.getElementById('settingsToggle');
+        if (settingsToggleBtn) settingsToggleBtn.style.display = user ? 'inline-flex' : 'none';
     const displayName = currentProfile.display_name || user.email;
     const initials = displayName.charAt(0).toUpperCase();
 
