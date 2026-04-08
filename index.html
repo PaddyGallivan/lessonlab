@@ -5752,22 +5752,18 @@ function printStudentTracker(idx) {
   html += '@media print{body{margin:10mm;}@page{margin:10mm;}}';
   html += '
 @media (max-width: 768px) {
-  header { flex-wrap: wrap; padding: 8px 12px; gap: 4px; }
-  .header-left { flex: 1 1 100%; }
-  #header-right { flex: 1 1 100%; justify-content: flex-start; flex-wrap: wrap; gap: 6px; }
-  .header-title h1 { font-size: 1.1rem; }
+  header { flex-direction: column; align-items: stretch; padding: 8px 12px; gap: 6px; }
+  .header-left { display: flex; align-items: center; gap: 8px; }
+  #header-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .header-tags { display: none; }
   .subjects-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; padding: 0.75rem; }
   .subject-card { padding: 1rem 0.75rem; }
-  .btn-group { flex-wrap: wrap; gap: 0.375rem; }
+  .btn-group { flex-wrap: wrap; }
   .result-actions { flex-wrap: wrap; gap: 0.375rem; }
-  .settings-panel { width: 100% !important; min-width: unset !important; }
+  .settings-panel { width: 100% !important; }
 }
 @media (max-width: 480px) {
   .subjects-grid { grid-template-columns: 1fr; }
-  header { padding: 6px 10px; }
-  .header-title h1 { font-size: 1rem; }
-  .subject-card { padding: 0.875rem 0.625rem; }
   .settings-btn { padding: 5px 7px !important; font-size: 0.85rem; }
   #signInBtn, #signUpBtn { padding: 5px 10px !important; font-size: 0.8rem; }
 }</style></head><body>';
