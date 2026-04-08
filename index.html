@@ -1482,6 +1482,10 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
 
 
 <div class="settings-panel" id="settingsPanel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+    <strong style="font-size:1.05rem;">School Settings</strong>
+    <button onclick="document.getElementById('settingsPanel').classList.remove('show')" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#888;line-height:1;" title="Close">&times;</button>
+  </div>
   <div class="form-group">
     <label>School Name</label>
     <input type="text" id="schoolName" value="Williamstown Primary School">
