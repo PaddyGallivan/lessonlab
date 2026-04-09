@@ -2845,35 +2845,41 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
         grouping: { whole: 'Demonstration and artist study', pairs: 'Peer critique partners', small: 'Shared materials tables of 4', individual: 'Studio creation time' }
       };
     }
-    // Fallback
-    const artFallback = [
-      [`Discovering ${F}: Artists & Inspiration`, `Exploring ${F}: Materials & Techniques`, `${F}: Experimenting with ${sk0}`],
-      [`${F}: Developing ${sk0} Skills`, `${F}: Working with ${sk1}`, `${F}: Creating Our Artwork`, `${F}: Refining Our Work`],
-      [`${F}: Finishing Touches`, `${F}: Gallery Walk & Critique`, `${F}: Reflection & Celebration`]
+        // Fallback for other visual-art units (phase-safe flat index)
+    const artTitles = [
+      `Discovering ${F}: Artists & Inspiration`,
+      `Exploring ${F}: Materials & Techniques`,
+      `${F}: Experimenting with New Skills`,
+      `${F}: Developing Our Technique`,
+      `${F}: Creating Our Artwork`,
+      `${F}: Refining & Improving`,
+      `${F}: Finishing Touches`,
+      `${F}: Gallery Walk & Reflection`,
+      `${F}: Celebrating Our Art`,
+      `${F}: Looking Back, Looking Forward`,
     ];
-    const phIdx = phase === 'intro' ? 0 : phase === 'develop' ? 1 : 2;
-    const posInPhase = phase === 'intro' ? w-1 : phase === 'develop' ? w-Math.ceil(totalWeeks*0.3)-1 : w-Math.ceil(totalWeeks*0.7)-1;
-    const titleArr = artFallback[phIdx];
+    const titleIdx = Math.min(w - 1, artTitles.length - 1);
     return {
-      title: titleArr[posInPhase % titleArr.length],
-      li: phase === 'intro' ? `explore ${f} materials and techniques, focusing on ${sk0}` :
-          phase === 'develop' ? `develop ${sk0} and ${sk1} skills in our ${f} artwork` :
-          `present and reflect on our ${f} artwork`,
+      title: artTitles[titleIdx],
+      li: phase === 'intro'
+        ? `explore ${f} materials and techniques through guided discovery`
+        : phase === 'develop'
+        ? `develop ${f} skills through experimentation and creative practice`
+        : `apply and refine ${f} skills in a personal artwork`,
       sc: [
-        `I can ${phase === 'intro' ? 'experiment with' : phase === 'develop' ? 'use with control' : 'select and apply'} ${f} techniques`,
-        `I can ${phase === 'intro' ? 'describe what I see in artworks' : phase === 'develop' ? 'make creative choices' : 'explain my creative process'}`,
-        `I can ${phase === 'intro' ? 'work safely with materials' : phase === 'develop' ? 'give and receive feedback' : 'reflect on my growth as an artist'}`
+        `I can ${phase === 'intro' ? 'experiment with' : phase === 'develop' ? 'use with growing confidence' : 'apply independently'} ${f} techniques`,
+        `I can make creative choices in my ${f} work`,
+        `I can give and receive constructive feedback about our artworks`,
       ].join('\n'),
       equipment: `${F} materials, sketchbooks, pencils, smocks`,
-      context: `Week ${w} of ${totalWeeks} — ${F} unit (${phase} phase).`,
+      context: `Week ${w} of ${totalWeeks} — ${F} unit (${phase} phase). Victorian Curriculum 2.0 Visual Arts.`,
       differentiation: {
         support: 'Provide step-by-step visual instructions, pre-drawn templates, simplified materials, shorter work time. Pair with a buddy. Offer colour wheels and reference images.',
-        extension: 'Challenge with mixed media, complex compositions, peer mentoring roles. Create opportunities for independent experimentation and self-reflection.'
+        extension: 'Challenge with mixed media, complex compositions, peer mentoring roles. Create opportunities for independent experimentation and self-reflection.',
       },
       grouping: { whole: 'Demonstration and artist study', pairs: 'Peer critique partners', small: 'Shared materials tables of 4', individual: 'Studio creation time' }
     };
   }
-
   // ── FRENCH ──────────────────────────────────────────────────
   if (subj === 'french') {
     const frWeeks = {
