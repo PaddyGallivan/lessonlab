@@ -3245,6 +3245,147 @@ function generateLesson(subj, unit, focus, weekNum, totalWeeks) {
     };
   }
 
+  // ── LITERACY ─────────────────────────────────────────────
+  if (subj === 'literacy') {
+    const litWeeks = {
+      'reading-comp': [
+        {t:`Reading Strategies: What Do Good Readers Do?`,li:`identify and apply active reading strategies`,sc:[`I can name at least 3 reading strategies`,`I can choose a strategy to help my understanding`,`I can explain why good readers use strategies`],eq:'Anchor charts, mentor text, sticky notes, reading journals'},
+        {t:`Predicting: Before and During Reading`,li:`make predictions before and during reading using text clues`,sc:[`I can use the cover, title and blurb to predict`,`I can update my prediction as I read`,`I can explain the clues I used`],eq:'Prediction graphic organiser, mentor text, sticky notes'},
+        {t:`Visualising the Text`,li:`create mental images to deepen understanding of a text`,sc:[`I can describe an image the text created in my mind`,`I can identify the words that helped me visualise`,`I can sketch my visualisation and explain it`],eq:'Mentor text, sketch paper, coloured pencils, reading journals'},
+        {t:`Making Connections`,li:`make text-to-self, text-to-text and text-to-world connections`,sc:[`I can make a text-to-self connection`,`I can make a text-to-world connection`,`I can explain how the connection helps my understanding`],eq:'Connection anchor chart, sticky notes, reading journals'},
+        {t:`Asking Questions`,li:`generate questions before, during and after reading`,sc:[`I can ask a question before reading`,`I can ask a question during reading`,`I can identify questions the text left unanswered`],eq:'Question stems chart, sticky notes, mentor text'},
+        {t:`Inferring: Reading Between the Lines`,li:`make inferences using evidence from the text and prior knowledge`,sc:[`I can use clues in the text to infer`,`I can explain my evidence`,`I can distinguish between literal and inferential meaning`],eq:'Inference graphic organiser, mentor text, reading journals'},
+        {t:`Summarising`,li:`identify main ideas and summarise a text`,sc:[`I can identify the main idea`,`I can leave out unimportant details`,`I can write or say a summary in my own words`],eq:'Summarising frames, mentor text, reading journals'},
+        {t:`Evaluating a Text`,li:`evaluate the author's purpose and the effectiveness of a text`,sc:[`I can identify the author's purpose`,`I can evaluate whether the text achieved its purpose`,`I can support my opinion with evidence`],eq:'Evaluation graphic organiser, mentor text, exit tickets'},
+        {t:`Applying Strategies: Independent Reading`,li:`apply a range of comprehension strategies to an unseen text`,sc:[`I can choose appropriate strategies for this text`,`I can monitor my own understanding`,`I can respond to the text in writing`],eq:'Unseen text selection, reading journals, graphic organisers'},
+        {t:`Sharing Our Reading Thinking`,li:`share comprehension strategies and reflect on reading growth`,sc:[`I can share a strategy that works for me`,`I can give feedback on a peer's thinking`,`I can set a goal for my reading`],eq:'Reading reflection templates, partner sharing time'},
+      ],
+      'writing-narrative': [
+        {t:`Exploring Narrative: Reading Like a Writer`,li:`identify the features and structure of effective narrative writing`,sc:[`I can name the key features of a narrative`,`I can identify orientation, complication and resolution`,`I can explain what makes a narrative engaging`],eq:'Mentor texts, narrative features anchor chart, reading journals'},
+        {t:`Generating Ideas: Character and Setting`,li:`develop a character and setting for a narrative`,sc:[`I can describe my character using STEAL (Speech, Thoughts, Effect, Actions, Looks)`,`I can create an interesting setting description`,`I can explain how character and setting connect`],eq:'Character planning templates, setting description examples, journals'},
+        {t:`Planning a Narrative`,li:`plan a narrative using an orientation, complication and resolution`,sc:[`I can plan my story using a narrative arc`,`I can identify my main problem and resolution`,`I can explain the purpose of each part`],eq:'Story mountain/arc planners, sticky notes, mentor text examples'},
+        {t:`Writing the Orientation: Hook Your Reader`,li:`write an engaging orientation that introduces characters and setting`,sc:[`I can start with an interesting hook`,`I can introduce my character and setting`,`I can use descriptive language to engage the reader`],eq:'Hook examples, drafting paper/books, anchor chart'},
+        {t:`Developing the Complication`,li:`write a complication that creates tension and engages the reader`,sc:[`I can write a clear problem or conflict`,`I can build tension using language choices`,`I can keep the reader wondering what happens next`],eq:'Tension-building language chart, writing books, mentor texts'},
+        {t:`Writing Dialogue`,li:`use dialogue to reveal character and advance the plot`,sc:[`I can punctuate dialogue correctly`,`I can use dialogue to show character personality`,`I can vary dialogue tags for effect`],eq:'Dialogue punctuation chart, examples from mentor texts, writing books'},
+        {t:`Crafting a Resolution and Ending`,li:`write a satisfying resolution that ties up the story`,sc:[`I can resolve the main problem`,`I can write an ending that feels satisfying`,`I can avoid an ending that is too rushed or sudden`],eq:'Resolution examples, writing books'},
+        {t:`Editing and Revising`,li:`edit my narrative to improve clarity, vocabulary and conventions`,sc:[`I can check spelling and punctuation`,`I can improve word choice by replacing dull words`,`I can read aloud to check it makes sense`],eq:'Editing checklists, dictionaries, thesauruses, writing books'},
+        {t:`Publishing Our Narratives`,li:`publish a polished narrative for an authentic audience`,sc:[`I can write or type a neat final copy`,`I can add illustrations if appropriate`,`I can share my narrative with the class`],eq:'Publishing templates, computers (if available), display materials'},
+        {t:`Celebrating Writing and Reflecting`,li:`celebrate our narratives and reflect on our writing growth`,sc:[`I can identify three things I improved in this unit`,`I can give constructive feedback to a peer`,`I can set a writing goal for next time`],eq:"Author's chair setup, reflection journals, peer feedback cards"},
+      ],
+    };
+    const weekArr = litWeeks[unit];
+    if (weekArr && weekArr[w-1]) {
+      const wd = weekArr[w-1];
+      return {
+        title: wd.t,
+        li: wd.li,
+        sc: wd.sc.join('\n'),
+        equipment: wd.eq,
+        context: `Week ${w} of ${totalWeeks} — ${F} unit (${phase} phase). Victorian Curriculum 2.0 English.`,
+        differentiation: {
+          support: `Sentence starters and frames provided. Word banks available. Graphic organisers to support planning. Reduce writing quantity but maintain same concept. Partner support during writing conferences.`,
+          extension: `Extended and complex texts. Add layers of craft (subplots, figurative language, complex structure). Peer mentoring and editing role. Publish for a wider or real-world audience.`
+        },
+        grouping: { whole: 'Shared text and explicit teaching', pairs: 'Talk partners for discussion and feedback', small: 'Guided reading/writing group', individual: 'Independent reading or writing time' }
+      };
+    }
+    const litTitles = [
+      [`Exploring ${F}: Reading Like a Writer (Week ${w})`, `${F}: Immersion and Discovery (Week ${w})`, `${F}: Building Foundations (Week ${w})`],
+      [`${F}: Practising the Craft (Week ${w})`, `${F}: Developing Independence (Week ${w})`, `${F}: Writing with Purpose (Week ${w})`, `${F}: Peer Collaboration (Week ${w})`],
+      [`${F}: Polishing and Publishing (Week ${w})`, `${F}: Reflection and Celebration (Week ${w})`, `${F}: Sharing and Goal Setting (Week ${w})`]
+    ];
+    const phIdx = phase === 'intro' ? 0 : phase === 'develop' ? 1 : 2;
+    const posInPhase = phase === 'intro' ? w - 1 : phase === 'develop' ? w - Math.ceil(totalWeeks*0.3) - 1 : w - Math.ceil(totalWeeks*0.7) - 1;
+    return {
+      title: litTitles[phIdx][Math.max(0, posInPhase) % litTitles[phIdx].length],
+      li: phase === 'intro' ? `explore the features and purpose of ${f} through mentor texts and shared examples` :
+          phase === 'develop' ? `apply ${f} skills in guided and independent reading and writing activities` :
+          `publish and share ${f} work that demonstrates understanding and craft`,
+      sc: [
+        `I can ${phase === 'intro' ? 'identify key features of' : phase === 'develop' ? 'apply strategies for' : 'demonstrate my understanding of'} ${f}`,
+        `I can ${phase === 'intro' ? 'discuss ideas with a partner' : phase === 'develop' ? 'write or respond independently with increasing confidence' : 'give and receive constructive feedback'}`,
+        `I can ${phase === 'intro' ? 'connect the text to my own experience' : phase === 'develop' ? 'check my work against the success criteria' : 'reflect on my literacy growth and set a goal'}`
+      ].join('\n'),
+      equipment: 'Mentor texts, reading/writing journals, anchor charts, pencils, graphic organisers',
+      context: `Week ${w} of ${totalWeeks} — ${F} unit (${phase} phase). Victorian Curriculum 2.0 English.`,
+      differentiation: {
+        support: `Sentence starters and frames. Word banks and vocabulary walls. Graphic organisers. Reduced quantity, same concept. Partner support. Audio support for reading tasks.`,
+        extension: `Extended or complex text choices. Additional layers of craft. Peer mentoring role. Publish for authentic audience. Compare across texts and genres.`
+      },
+      grouping: { whole: 'Shared text and modelled/shared writing', pairs: 'Turn and talk, peer feedback', small: 'Guided reading or writing group (3–5)', individual: 'Independent reading and writing' }
+    };
+  }
+
+  // ── SCIENCE / DIGITAL TECH ───────────────────────────────────────────
+  if (subj === 'stem') {
+    const sciWeeks = {
+      'biological': [
+        {t:`What Is Alive? Living vs Non-Living`,li:`classify objects as living or non-living using observable characteristics`,sc:[`I can name characteristics of living things`,`I can sort objects into living and non-living`,`I can justify my decisions using evidence`],eq:'Sorting cards, nature specimens (leaves, rocks), science journals'},
+        {t:`Observing Plants`,li:`observe and record the features and needs of plants`,sc:[`I can identify the parts of a plant`,`I can explain what plants need to survive`,`I can make and record careful observations`],eq:'Potted plants, magnifying glasses, science journals, rulers'},
+        {t:`Plant Growth Investigation`,li:`design and carry out a fair test on plant growth`,sc:[`I can identify the variable I am testing`,`I can keep other variables the same`,`I can record observations over time`],eq:'Seeds, soil, cups, water, rulers, science journals'},
+        {t:`Observing Animals`,li:`observe and classify animals based on physical features`,sc:[`I can name observable features of animals`,`I can group animals using a characteristic`,`I can explain my classification`],eq:'Animal picture sets, Venn diagrams, sorting charts, science journals'},
+        {t:`Animal Adaptations`,li:`explain how an animal's features help it survive in its habitat`,sc:[`I can describe an adaptation of a chosen animal`,`I can explain how it helps the animal survive`,`I can connect adaptation to habitat`],eq:'Research texts or devices, graphic organisers, science journals'},
+        {t:`Habitats: Where Do Living Things Live?`,li:`investigate how habitats provide for the needs of living things`,sc:[`I can describe a habitat`,`I can explain how a habitat meets the needs of living things`,`I can compare two habitats`],eq:'Habitat photos/videos, comparison charts, science journals'},
+        {t:`Food Chains`,li:`construct and explain simple food chains in an ecosystem`,sc:[`I can use producer, consumer, predator and prey correctly`,`I can construct a food chain from a habitat`,`I can explain what happens if one part is removed`],eq:'Food chain cards, ecosystem images, science journals'},
+        {t:`Life Cycles`,li:`describe and sequence the life cycle of an animal`,sc:[`I can sequence the stages of a life cycle`,`I can describe what happens at each stage`,`I can compare life cycles of different animals`],eq:'Life cycle diagrams, research texts, scissors and glue, science journals'},
+        {t:`Scientist Investigation: Independent Inquiry`,li:`apply scientific skills to an independent biological science investigation`,sc:[`I can pose a question and plan an investigation`,`I can record observations systematically`,`I can draw a conclusion based on evidence`],eq:'Investigation materials, science journals, recording templates'},
+        {t:`Sharing Our Science: Presentations`,li:`communicate biological science findings to an audience`,sc:[`I can present my investigation findings clearly`,`I can use scientific vocabulary`,`I can answer questions about my findings`],eq:'Presentation formats (poster, slides, verbal), science journals'},
+      ],
+      'physical': [
+        {t:`What Are Forces? Push and Pull`,li:`identify everyday examples of pushes and pulls`,sc:[`I can define a force as a push or pull`,`I can find examples of forces in everyday life`,`I can describe what forces do to objects`],eq:'A range of objects to push and pull, science journals, observation chart'},
+        {t:`Exploring Magnets`,li:`investigate the properties of magnets and magnetic materials`,sc:[`I can identify which materials are magnetic`,`I can describe attraction and repulsion`,`I can make a prediction and test it`],eq:'Magnets (bar, horseshoe), range of materials, science journals'},
+        {t:`Light and Shadow`,li:`investigate how light travels and creates shadows`,sc:[`I can explain that light travels in straight lines`,`I can predict and test how shadow size changes`,`I can record my findings`],eq:'Torches, objects, paper, measuring tape, science journals'},
+        {t:`Sound: Vibrations and Volume`,li:`investigate how sound is made and how it travels`,sc:[`I can explain that sound is made by vibrations`,`I can demonstrate how to change pitch and volume`,`I can record my observations`],eq:'Rulers, rubber bands, containers, rice on drums, science journals'},
+        {t:`Fair Testing: Forces Investigation`,li:`design and conduct a fair test to investigate a force`,sc:[`I can identify variables to change, keep the same and measure`,`I can record results in a table`,`I can draw a conclusion`],eq:'Ramps, toy cars, rulers, weights, science journals'},
+        {t:`Electricity: Circuits`,li:`build simple circuits and investigate what makes them work`,sc:[`I can build a working circuit`,`I can predict what will happen if I change a component`,`I can explain what is needed for a circuit to work`],eq:'Batteries, wires, globes, switches, circuit diagrams, science journals'},
+        {t:`Simple Machines`,li:`investigate how simple machines make work easier`,sc:[`I can name at least 3 simple machines`,`I can explain how a simple machine reduces effort`,`I can give an everyday example`],eq:'Lever, ramp, pulley examples, weights, rulers, science journals'},
+        {t:`Designing Solutions with Forces`,li:`apply understanding of forces to design a solution to a problem`,sc:[`I can identify a problem to solve using forces`,`I can design and build a solution`,`I can evaluate and improve my design`],eq:'Design challenge materials, craft supplies, science/design journals'},
+        {t:`Testing and Evaluating Our Designs`,li:`test and evaluate our solutions against design criteria`,sc:[`I can test my design against the criteria`,`I can identify what worked and what to improve`,`I can explain my findings to others`],eq:'Finished designs, testing protocols, evaluation templates'},
+        {t:`Reflecting on Physical Sciences`,li:`reflect on physical science learning and communicate understanding`,sc:[`I can explain a key concept from this unit`,`I can connect science to everyday life`,`I can set a goal for science next term`],eq:'Reflection journals, science vocabulary wall'},
+      ],
+    };
+    const weekArr = sciWeeks[unit];
+    if (weekArr && weekArr[w-1]) {
+      const wd = weekArr[w-1];
+      return {
+        title: wd.t,
+        li: wd.li,
+        sc: wd.sc.join('\n'),
+        equipment: wd.eq,
+        context: `Week ${w} of ${totalWeeks} — ${F} unit (${phase} phase). Victorian Curriculum 2.0 Science.`,
+        differentiation: {
+          support: `Pre-prepared recording templates with sentence starters. Paired with a supportive partner. Visual instructions displayed step-by-step. Pre-sorted materials. Allow oral responses instead of written.`,
+          extension: `Design own investigation with minimal scaffolding. Research and present findings. Connect to real-world science applications. Explore related phenomena. Create explanations for younger students.`
+        },
+        grouping: { whole: 'Wonder question, explicit teaching and demonstration', pairs: 'Investigation partners', small: 'Science groups of 3-4', individual: 'Recording and reflection in science journal' }
+      };
+    }
+    const sciPhase = {
+      intro: [`Wondering About ${F} (Week ${w})`, `Exploring ${F}: First Observations (Week ${w})`, `${F}: What Do We Already Know? (Week ${w})`],
+      develop: [`Investigating ${F} (Week ${w})`, `${F}: Testing Our Ideas (Week ${w})`, `${F}: Gathering Evidence (Week ${w})`, `${F}: Making Connections (Week ${w})`],
+      apply: [`${F}: Designing Solutions (Week ${w})`, `Communicating Our ${F} Findings (Week ${w})`, `${F}: Reflection and Science Celebration (Week ${w})`]
+    };
+    const posInPhase = phase === 'intro' ? w - 1 : phase === 'develop' ? w - Math.ceil(totalWeeks*0.3) - 1 : w - Math.ceil(totalWeeks*0.7) - 1;
+    const titles = sciPhase[phase];
+    return {
+      title: titles[Math.max(0, posInPhase) % titles.length],
+      li: phase === 'intro' ? `observe and explore ${f} to build curiosity and prior knowledge` :
+          phase === 'develop' ? `investigate ${f} by planning, testing and recording findings` :
+          `apply ${f} understanding to design solutions and communicate findings`,
+      sc: [
+        `I can ${phase === 'intro' ? 'make and record observations about' : phase === 'develop' ? 'design and carry out an investigation about' : 'apply my understanding of'} ${f}`,
+        `I can ${phase === 'intro' ? 'ask a question to investigate' : phase === 'develop' ? 'identify variables and record results' : 'evaluate and communicate my findings'}`,
+        `I can ${phase === 'intro' ? 'use scientific vocabulary to describe what I notice' : phase === 'develop' ? 'draw a conclusion based on evidence' : 'connect my science learning to real-world applications'}`
+      ].join('\n'),
+      equipment: 'Science journals, investigation materials, measuring tools, recording templates',
+      context: `Week ${w} of ${totalWeeks} — ${F} unit (${phase} phase). Victorian Curriculum 2.0 Science.`,
+      differentiation: {
+        support: `Pre-prepared recording templates. Sentence starters. Buddy system for investigation. Visual step-by-step instructions. Pre-sorted or labelled materials.`,
+        extension: `Independent investigation design. Research connections to real-world science. Extend findings with further testing. Create explanations or presentations for peers.`
+      },
+      grouping: { whole: 'Wonder question, discussion and explicit teaching', pairs: 'Investigation partners', small: 'Science groups of 3-4', individual: 'Science journal recording and reflection' }
+    };
+  }
   // ── GENERIC FALLBACK ──────────────────────────────────────
   return {
     title: `${F}: Week ${w}`,
