@@ -1155,8 +1155,7 @@
           border-bottom: 1px solid var(--border, #e5e7eb);
         ">Account Settings</button>
 
-                <button id="<button id="accountSettingsBtn" onclick="openAccountSettings()" style="display:none;width:100%;text-align:left;padding:0.75rem 1rem;background:none;border:none;border-top:1px solid #e5e7eb;cursor:pointer;font-size:0.875rem;color:#374151;">⚙️ My Account</button>
-adminPanelBtn" onclick="openAdminPanel()" style="display:none;width:100%;text-align:left;padding:0.75rem 1rem;background:none;border:none;border-top:1px solid #e5e7eb;cursor:pointer;font-size:0.875rem;color:#7c3aed;font-weight:500;">&#128737;&#65039; Admin Panel</button>
+        <button id="adminPanelBtn" onclick="openAdminPanel()" style="display:none;width:100%;text-align:left;padding:0.75rem 1rem;background:none;border:none;border-top:1px solid #e5e7eb;cursor:pointer;font-size:0.875rem;color:#7c3aed;font-weight:500;">&#128737;&#65039; Admin Panel</button>
 
 <button id="signOutBtn" style="
           display: block;
@@ -7036,7 +7035,7 @@ function showUpgradePrompt(subject = null) {
 let autoSaveTimeout = null;
 
 /**
- * Save a lesson to Supabase
+ * Save a lesson to the Worker API
  */
 async function saveLesson(lessonData) {
   if (!currentUser) {
@@ -7311,15 +7310,60 @@ document.getElementById('signOutBtn')?.addEventListener('click', async () => {
 
 // My Lessons button
 document.getElementById('myLessonsBtn')?.addEventListener('click', async () => {
-  const lessons = await loadMyLessons();
-  showToast(`Loaded ${lessons.length} lessons`, 'info');
-  // TODO: Display lessons in a modal or page
+  var dd = document.getElementById('userDropdown');
+  if (dd) dd.style.display = 'none';
+  showMyLessonsModal();
 });
+
+async function showMyLessonsModal() {
+  // Remove existing modal if any
+  var existing = document.getElementById('myLessonsModal');
+  if (existing) existing.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'myLessonsModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:4000;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;';
+  modal.innerHTML = '<div style="background:white;border-radius:12px;width:100%;max-width:720px;padding:28px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><h2 style="margin:0;font-size:1.25rem;font-weight:700;color:#111827;">My Saved Lessons</h2><button onclick="document.getElementById(\'myLessonsModal\').remove()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#6b7280;">&times;</button></div><div id="myLessonsContent" style="font-size:0.9rem;color:#6b7280;">Loading&hellip;</div></div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if (e.target === modal) modal.remove(); });
+
+  var lessons = await loadMyLessons();
+  var content = document.getElementById('myLessonsContent');
+  if (!lessons.length) {
+    content.innerHTML = '<p style="text-align:center;padding:2rem 0;color:#9ca3af;">No saved lessons yet. Generate a lesson and save it to your library!</p>';
+    return;
+  }
+  content.innerHTML = lessons.map(function(l) {
+    var date = l.updated_at ? new Date(l.updated_at).toLocaleDateString('en-AU', {day:'numeric',month:'short',year:'numeric'}) : '';
+    var meta = [l.subject, l.year_level ? 'Year ' + l.year_level : '', l.term ? 'Term ' + l.term : ''].filter(Boolean).join(' · ');
+    return '<div style="border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;">' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-weight:600;color:#111827;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (l.title || 'Untitled Lesson') + '</div>' +
+        '<div style="font-size:0.8rem;color:#6b7280;margin-top:2px;">' + meta + (date ? (meta ? ' &mdash; ' : '') + 'Saved ' + date : '') + '</div>' +
+      '</div>' +
+      '<button onclick="deleteSavedLesson(\'' + l.id + '\', this)" style="flex-shrink:0;padding:6px 12px;background:#fee2e2;color:#991b1b;border:none;border-radius:6px;cursor:pointer;font-size:0.8rem;font-weight:600;">Delete</button>' +
+    '</div>';
+  }).join('');
+}
+
+async function deleteSavedLesson(id, btn) {
+  if (!confirm('Delete this lesson?')) return;
+  btn.disabled = true;
+  btn.textContent = '…';
+  var ok = await deleteLesson(id);
+  if (ok) {
+    btn.closest('div[style*="border:1px"]').remove();
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Delete';
+  }
+}
 
 // Account Settings button
 document.getElementById('accountSettingsBtn')?.addEventListener('click', () => {
-  showToast('Account Settings coming soon', 'info');
-  // TODO: Implement account settings modal
+  var dd = document.getElementById('userDropdown');
+  if (dd) dd.style.display = 'none';
+  openAccountSettings();
 });
 
 // Subject card click - check tier access
