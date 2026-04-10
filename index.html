@@ -5283,6 +5283,71 @@ function updateGenCounter() {
   el.style.cssText += ';background:#FFF3E0;color:#E65100;border:1px solid #FFB74D;border-radius:12px;padding:3px 10px;font-size:12px;font-weight:600;margin-left:8px;';
 }
 // ─────────────────────────────────────────────────────────────────────────────
+// UNIT PREP CHECKLIST — things to organise before the unit starts
+// ─────────────────────────────────────────────────────────────────────────────
+
+const UNIT_PREP = {
+  science: {
+    biological: [
+      { by: 'Before Week 1', item: 'Print sorting cards — 8–10 images from Google (rock, dead leaf, dog, flower, cloud, mushroom, wooden chair). Cut into cards, 1 set per pair. Laminate if you can.' },
+      { by: 'Before Week 1', item: 'Collect real specimens from outside: a dead leaf, a rock, a feather. Keep in a ziplock bag.' },
+      { by: 'Before Week 2', item: 'Source magnifying glasses — check the science cupboard. 1 per pair.' },
+      { by: 'Before Week 3 — plant these in Week 2!', item: 'Buy seeds (bean or grass seed, ~$3 at hardware store) + 6 plastic cups + potting mix. Students plant in Week 2 and observe weekly. Do not leave this until Week 3 or there\'s nothing to see.' },
+      { by: 'Before Week 4', item: 'Print 12–15 animal picture cards — kangaroo, eagle, blue-tongue lizard, salmon, butterfly, platypus, frog, emu, bee, shark, crocodile, penguin. Cut out, 1 set per group.' },
+      { by: 'Before Week 5', item: 'Print or save habitat photos: Great Barrier Reef, Australian desert, rainforest, grassland, urban backyard. Can display on screen or print A4.' },
+      { by: 'Before Week 6', item: 'Prepare food chain materials: write organism names on index cards (grass, grasshopper, frog, snake, eagle). Get a ball of wool or string for the web activity.' },
+      { by: 'Before Week 7', item: 'Print a butterfly life cycle and a frog life cycle image. Write the stages on paper strips for sequencing. 1 set per pair.' },
+      { by: 'Before Week 8', item: 'Print info sheets for 4–5 Australian animals (bilby, thorny devil, platypus, echidna, sugar glider). 1 animal per pair works well.' },
+      { by: 'Before Week 9', item: 'Book tablets or camera for outdoor session. Print a local species ID sheet or download iNaturalist app on class devices. Check yard for good observation spots.' },
+    ],
+    chemical: [
+      { by: 'Before Week 1', item: 'Gather material samples: a piece of wood, plastic container, metal spoon, fabric scrap, glass jar. 1 set per group. Check the science cupboard first.' },
+      { by: 'Before Week 3', item: 'Gather: ice (freeze water the night before), water, clear containers, thermometers. Source a heat element — a hot water urn works. This lesson needs teacher supervision for heat.' },
+      { by: 'Before Week 5', item: 'Source: baking soda, vinegar, eggs, bread, clay. These are your irreversible change materials. Vinegar smell — open windows.' },
+      { by: 'Before Week 6', item: 'Get: sugar, salt, sand, flour, spoons, clear containers. Also a thermometer and two water temperatures for the dissolving rate extension.' },
+      { by: 'Before Week 7', item: 'Prepare separation equipment: funnel, filter paper (coffee filters work), sieve, evaporating dishes (or shallow plates). Mix: sand + salt, gravel + sand, salt + water.' },
+    ],
+    physical: [
+      { by: 'Before Week 1', item: 'Check science cupboard for: ramps (use books + a ruler), balls, spring scales. If no spring scales, use rubber bands stretched across a ruler.' },
+      { by: 'Before Week 3', item: 'Source magnets — bar and horseshoe magnets from science cupboard. Prepare a materials kit: paperclips, coins, foil, wood scraps, plastic, fabric.' },
+      { by: 'Before Week 4', item: 'Get: torches (1 per pair — ask students to bring one), mirrors (check the prep room), white paper for shadow tracing, rulers.' },
+      { by: 'Before Week 5', item: 'Prepare sound materials: rulers, rubber bands, containers with rice, drums (upturned tins), any string instruments. Test beforehand.' },
+      { by: 'Before Week 6 — ORDER AHEAD', item: 'Simple circuit kits: batteries (AA), wires with alligator clips, small globes or LEDs, buzzers, switches. Order from a science supplier or Jaycar if your school doesn\'t have them. Allow 1–2 weeks lead time.' },
+    ],
+    earth_space: [
+      { by: 'Before Week 1', item: 'Source weather measuring tools: thermometer, rain gauge (can make from a clear bottle + ruler), weather vane (can make from card + pencil). Set up a class weather station in the yard or by a window.' },
+      { by: 'Before Week 2', item: 'Get a globe and a torch. This is the seasons demonstration — the globe + torch shows Earth\'s tilt clearly. Check the library or science cupboard.' },
+      { by: 'Before Week 4', item: 'Collect rock samples — 3–5 different types. Check if the school has a rock collection. Alternatively: gravel from outside, a brick, sandstone, slate, granite from a garden centre. Get magnifying glasses.' },
+      { by: 'Before Week 5', item: 'Collect 3 different soil types: garden soil (dark, loamy), clay soil (heavy, sticky), sandy soil (light, gritty). Put each in a labelled container. Sand from a sandpit works for the sandy sample.' },
+      { by: 'Before Week 8', item: 'Build or borrow a solar system model. A simple version: print planet images at relative size, hang from the ceiling or lay on the floor with scaled distances. Use a globe + torch for Earth rotation demo.' },
+      { by: 'Before Week 9', item: 'Book devices for research session. Print 2–3 reliable source pages on student-chosen topics as backup for no-internet days.' },
+    ],
+  }
+};
+
+function getUnitPrepHTML(subjectKey, unitKey, startWeek) {
+  const prep = UNIT_PREP[subjectKey] && UNIT_PREP[subjectKey][unitKey];
+  if (!prep || prep.length === 0) return '';
+  const items = prep.map(p => `
+    <li style="margin-bottom:8px;padding:8px 12px;background:#fff;border-radius:6px;border-left:3px solid #1E8449;">
+      <span style="font-weight:700;color:#1E8449;font-size:12px;text-transform:uppercase;letter-spacing:.04em;">${p.by}</span><br>
+      <span style="font-size:13px;color:#333;line-height:1.5;">${p.item}</span>
+    </li>`).join('');
+  return `
+    <div id="unitPrepChecklist" style="background:#f0faf4;border:1px solid #a7d7b8;border-radius:10px;padding:16px 20px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="document.getElementById('unitPrepBody').style.display = document.getElementById('unitPrepBody').style.display==='none'?'block':'none';this.querySelector('.prep-toggle').textContent = document.getElementById('unitPrepBody').style.display==='none'?'▶ Show':'▼ Hide';">
+        <div>
+          <span style="font-size:15px;font-weight:700;color:#1E8449;">📋 Unit Prep Checklist</span>
+          <span style="font-size:12px;color:#555;margin-left:10px;">Things to organise before this unit starts</span>
+        </div>
+        <span class="prep-toggle" style="font-size:12px;color:#1E8449;font-weight:600;">▼ Hide</span>
+      </div>
+      <div id="unitPrepBody" style="margin-top:12px;">
+        <ul style="list-style:none;margin:0;padding:0;">${items}</ul>
+        <p style="font-size:11px;color:#888;margin:10px 0 0;">Tip: screenshot or print this list at the start of term so nothing sneaks up on you.</p>
+      </div>
+    </div>`;
+}
 
 function generateAll() {
   if (!state.unit || state.selectedFocuses.length === 0 || !state.yearLevel) {
@@ -5358,6 +5423,14 @@ function displayResults() {
 
   const grid = document.getElementById('resultsGrid');
   grid.innerHTML = '';
+
+  // Unit prep checklist — shown at top for subjects with prep data
+  const prepHTML = getUnitPrepHTML(state.subject, state.unit, state.startWeek || 1);
+  if (prepHTML) {
+    const prepEl = document.createElement('div');
+    prepEl.innerHTML = prepHTML;
+    grid.appendChild(prepEl.firstElementChild);
+  }
 
   const subjects = [...new Set(state.lessons.map(l => l.data.subject))];
   const yearLevels = [...new Set(state.lessons.map(l => l.data.year))];
