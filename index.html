@@ -4626,19 +4626,100 @@ function buildHTML(d, cfg, cds) {
     return h;
   }
 
-  // Build CRT step rows
-  const stepData = [
-    { do: d.steps && d.steps[0] ? d.steps[0] : `${cfg.entry || 'Settle students.'} Introduce today\u2019s learning intention: \u201c${d.li}\u201d. Quick warm-up activity related to the topic.`,
-      say: cfg.entSay || `\u201cToday we are learning to ${d.li}.\u201d` },
-    { do: d.steps && d.steps[1] ? d.steps[1] : `Demonstrate the key skill or concept. Show correct technique, then incorrect. Ask students what they notice. Max 3 teaching points: ${sc.slice(0,3).join(' \u00b7 ')}`,
-      say: `\u201cWatch carefully. Can you show me? What did you notice?\u201d` },
-    { do: d.steps && d.steps[2] ? d.steps[2] : `Students practise the skill. Circulate and coach. Use signal to freeze and give feedback. Pair up students who need support with confident peers.`,
-      say: `\u201cOff you go \u2014 remember: ${sc[0] || 'focus on the skill'}. I\u2019ll come around to help.\u201d` },
-    { do: d.steps && d.steps[3] ? d.steps[3] : `Students apply the skill in a game, performance, or creative task. Observe and adjust. Going well? Increase challenge. Not working? Simplify, re-demonstrate.`,
-      say: `\u201cNow let\u2019s put it all together. Show me what you\u2019ve learned.\u201d` },
-    { do: d.steps && d.steps[4] ? d.steps[4] : `Pack up equipment. Gather students. Reflect against success criteria. Ask: what went well? What was hard?`,
-      say: cfg.exSay || `\u201cBefore you go \u2014 thumbs up if you can ${sc[0] || 'do the skill'}.\u201d` }
-  ];
+  // Build CRT step rows — subject-aware phase content
+  function buildSteps(subjectName, li, scArr, equip, title) {
+    const s0 = scArr[0] || li, s1 = scArr[1] || li, s2 = scArr[2] || li;
+    const eq = equip || 'classroom materials';
+    const n = subjectName ? subjectName.toLowerCase() : '';
+    if (n === 'science') {
+      return [
+        { do: `Hook: Show a real object, image, or quick teacher demo related to "${title}". Ask students: "What do you notice? What do you wonder?" Take 3–4 responses. Introduce the learning intention: "${li}". Display SC on board.`, say: `"Today we're scientists. Before I tell you anything — what do you already notice about this?"` },
+        { do: `Hands-on investigation using: ${eq}. Students work in pairs or small groups. Provide a simple observation prompt: draw what you see, measure, predict-then-observe. Circulate with guiding questions: "What's changing? What are you noticing? Can you explain why?"`, say: `"Your job is to observe carefully and record everything — even if you don't know what it means yet."` },
+        { do: `Bring students back together. Ask groups to share one key observation. Teacher builds explanation from student responses — fill in gaps, correct misconceptions, introduce scientific vocabulary. Write key terms on the board. Link observations to the learning intention: "${li}".`, say: `"Let's make sense of what we found. Who can explain what happened — using scientific words?"` },
+        { do: `Students apply understanding to a new context: write a scientific explanation, label a diagram, complete a science journal entry, or answer a "what if" question extending the concept. Prompt: "${s1}". Early finishers: "${s2}".`, say: `"Now I want you to show me you understand — not just that you can do the activity."` },
+        { do: `Exit check against success criteria. Each student completes one of: thumbs up/sideways/down for each SC, a written "I used to think… now I think…", or a verbal share with a partner. Collect science journals. Preview next lesson.`, say: `"Before we pack up — on your whiteboard, show me one thing you can now do that you couldn't at the start. Thumbs up if you can: ${s0}."` }
+      ];
+    } else if (n === 'pe' || n === 'pe / hpe' || n.includes('pe')) {
+      return [
+        { do: `Students enter and begin active warm-up immediately — no waiting. Dynamic stretching sequence (30 sec each body part), followed by a movement tag game or skill-related challenge. Transition time < 2 min. Display LI and SC.`, say: `"Shoes on, moving straight away. Show me you remember the routine."` },
+        { do: `Gather students. Demonstrate today's skill or concept: "${li}". Model correct technique 3× full speed, then 1× slow with commentary. Point out common errors to avoid. Use a student volunteer to demonstrate. Max 3 teaching points from: ${scArr.slice(0,3).join(' · ')}.`, say: `"Watch what I do — then tell me: what did you notice? What were the key things?"` },
+        { do: `Structured skill practice in pairs or stations. Equipment: ${eq}. Give clear task card or verbal instructions. Circulate — praise correct technique by name, give immediate corrective feedback. Use freeze-and-feedback: "Freeze — I saw some great examples of ${s0}." Rotate every 4–5 min.`, say: `"Off you go. I'm watching for ${s0}. Show me you can do it."` },
+        { do: `Modified game applying today's skill in context. Adjust rules to ensure high participation (every student active, no elimination). If working well — add a tactical challenge. If struggling — simplify, reduce space, add a coach role. Rotate teams every 5 min.`, say: `"Game on. Use what we've been practising. I'm watching to see if you can: ${s1}."` },
+        { do: `Signal: equipment away. Students sit in a circle or on the line. Verbal reflection — "One thing I did well / one thing to improve." Check SC with thumbs: "${s0}" | "${s1}" | "${s2}". Note any students needing extra support.`, say: `"Before you line up — thumbs up if you can ${s0}. What's one thing you'll work on next lesson?"` }
+      ];
+    } else if (n === 'literacy') {
+      return [
+        { do: `Quick warm-up connected to today's focus: word sort, oral sentence building, quick-write, or shared reading of 1 page. Review prior learning — "Last lesson we practised [prior skill]. Today we're building on that with: ${li}." Display LI and SC.`, say: `"Eyes on me — here's what we're working on today and why it matters."` },
+        { do: `Explicit teaching using a mentor text, worked example, or modelled writing. Think-aloud as you demonstrate: make your reasoning visible. Teach the strategy step by step. Deconstruct examples showing both what to do and what to avoid. Key teaching points: ${scArr.slice(0,3).join(' · ')}.`, say: `"Watch how I do this — I'm going to think out loud so you can see exactly what's going on in my head."` },
+        { do: `Guided practice — students attempt the task with support. Whole class attempt first, then pairs. Provide sentence starters or graphic organisers. Teacher works with a focus group (3–4 students who need support). Circulate and give specific feedback using the success criteria.`, say: `"Your turn — give it a go. I'll be coming around. If you're stuck, check the SC on the board."` },
+        { do: `Independent practice. Students work on their own writing or reading task related to today's LI. Teacher conducts 2–3 individual reading/writing conferences (5 min each). Others continue independently. Use equipment: ${eq}.`, say: `"This is your independent time. I should be able to tell from your work that you understand today's focus."` },
+        { do: `Share time: 2–3 students share their work with the class. Audience gives specific, kind feedback using the SC as criteria. Students self-assess against each SC. Whole-class reflection: "What did you find tricky? What clicked?"`, say: `"Share what you're proud of. Listeners — your job is to say one specific thing you noticed they did well."` }
+      ];
+    } else if (n === 'numeracy' || n === 'mathematics') {
+      return [
+        { do: `Number Talk or warm-up: pose a mental maths problem related to today's focus. Students think silently (30 sec), then share strategies — record different approaches on the board. Discuss which is most efficient. Introduce today's LI: "${li}".`, say: `"Before we start — here's a problem. Think first, then share your strategy. There's no one right way."` },
+        { do: `Explicit teaching using concrete → representational → abstract (CRA) approach. Start with physical materials: ${eq}. Model the concept with manipulatives, then draw a diagram, then show the abstract algorithm/notation. Work through 2 examples with student input.`, say: `"First we use it with our hands, then we draw it, then we write the maths — watch how they're all the same idea."` },
+        { do: `Guided practice: students work through 3–4 examples with support. Teacher works with a small group using hands-on materials. Others work in pairs with one set of materials between them. Provide a worked example on the board to refer to. Check: "${s0}".`, say: `"Try the first one with your partner. Explain your thinking as you go — talking about maths helps you understand it."` },
+        { do: `Independent task: students complete practice problems at three levels — concrete (with materials), pictorial (drawing), abstract (numbers only). Students self-select entry point. Teacher circulates and checks for common errors. Equipment: ${eq}.`, say: `"Choose where you start — it's not about which is easiest, it's about which helps you understand best."` },
+        { do: `Exit ticket: 2–3 targeted questions to assess understanding of "${li}". Students complete individually and silently (3 min). Collect and use to inform tomorrow's lesson. Quick class debrief: "What was the trickiest part? What made it click?"`, say: `"On your own — show me what you can do. This helps me know how to help you next lesson."` }
+      ];
+    } else if (n === 'visual art' || n.includes('art')) {
+      return [
+        { do: `Stimulus: show 2–3 artworks related to today's focus. Ask: "What do you see? What technique/element is the artist using? What do you think/feel?" Brief discussion — 4–5 responses. Introduce the learning intention and connect to today's studio task: "${title}".`, say: `"Look at this artwork — don't tell me if you like it, tell me what you see the artist doing."` },
+        { do: `Explicit teaching: demonstrate the technique or art element for today. Use a live model or step-by-step demo at the front. Show common mistakes and how to recover from them. Students observe closely — invite them to predict the next step. Equipment: ${eq}.`, say: `"Watch me first. Notice how I hold the [tool], the pressure I use, the direction I work in."` },
+        { do: `Studio practice: students complete a warm-up exercise or skill-building task before the main artwork. Provide time to experiment on scrap paper/material with today's technique. Circulate and give specific technique feedback. Prompt: "${s0}".`, say: `"This is your practice — make mistakes here. Try it a few different ways before you start your actual work."` },
+        { do: `Main studio creation time: students work on their artwork. Play quiet background music. Teacher circulates giving individual feedback. Prompt deeper thinking: "Why did you make that choice? How does this connect to the artist we looked at?" Equipment: ${eq}.`, say: `"Studio time — focus on your work. I'll come to each of you and ask you to explain your choices."` },
+        { do: `Gallery walk or pair share: students place work on desks or wall. Students walk and leave a sticky note comment on one peer's work using the SC as a guide. Class discussion: "What technique did you see used well? What would you try differently?"`, say: `"Before we pack up — look at your work against the success criteria. What are you proud of? What's next?"` }
+      ];
+    } else if (n === 'music') {
+      return [
+        { do: `Listening warm-up: play 60 seconds of a piece related to today's focus. Ask: "What do you hear? What's happening with [musical element]?" Introduce today's LI: "${li}". Quick vocal or rhythm warm-up — 2 min (scales, clapping, body percussion).`, say: `"Listen — don't talk. What does this music make you notice about [focus]?"` },
+        { do: `Explicit teaching: model the musical concept or skill. Play/demonstrate correctly, then demonstrate a common error. Deconstruct: isolate the element being studied. Use notation, hand signs, or movement to support understanding. Key points: ${scArr.slice(0,3).join(' · ')}.`, say: `"Watch and listen. I'm going to show you the difference between doing it right and a common mistake — can you hear/see it?"` },
+        { do: `Guided exploration: students explore the concept together as a class — whole-group singing, clapping rhythms, or call-and-response. Move to pairs or small groups to attempt the task. Teacher circulates with specific feedback. Equipment/instruments: ${eq}.`, say: `"Everyone together — follow me. Now try it with a partner. Remember: ${s0}."` },
+        { do: `Performance/application task: students perform what they've been practising, apply the concept in an improvisation, or complete a listening analysis task. Rotate groups to perform to each other. Use peer feedback cards tied to the SC.`, say: `"Your turn to perform — I want to see and hear everything we've been working on."` },
+        { do: `Reflection and cool-down: students complete a musical journal entry or verbal reflection. Self-assess against SC. Class listening: teacher plays the stimulus again — "Does it sound different to you now? What can you hear that you couldn't before?"`, say: `"Can you hear more now than you could at the start? That's learning happening. What's still tricky?"` }
+      ];
+    } else if (n === 'drama') {
+      return [
+        { do: `Warm-up game or energiser related to today's drama focus: zip-zap-boing, mirror work, status walks, or a quick ensemble exercise. 3–4 min. Settle to a circle. Introduce today's LI: "${li}" and connect to the drama form/technique for today.`, say: `"Let's warm up our bodies and voices — we can't do drama cold. Then I'll tell you what we're exploring today."` },
+        { do: `Explicit teaching of today's drama technique or convention. Demonstrate with student volunteers. Discuss: "What did you notice the actor doing? How did that create meaning?" Deconstruct the technique with clear steps. Key teaching points: ${scArr.slice(0,3).join(' · ')}.`, say: `"Drama is a craft — we're going to learn a specific technique today. Watch closely and think about how it works."` },
+        { do: `Guided exploration: whole class or pairs attempt the technique in a structured task. Teacher participates, demonstrates, or side-coaches. Freeze moments to highlight effective examples and redirect. Prompt: "${s0}" and "${s1}".`, say: `"Have a go — side-coaching as you work. I'm looking for [specific technique]. Freeze — I just saw a great example of that."` },
+        { do: `Performance or devising task: small groups create a short scene or performance piece using today's technique. Give a clear brief, time limit (10–12 min to create, 2 min to perform). Groups show to each other. Audience: one warm, one specific observation per group.`, say: `"You have 10 minutes to make something. It doesn't have to be perfect — it has to show me you understand the technique."` },
+        { do: `Debrief in circle: discuss what worked, what challenged the group, what they'd change. Self-assess against the SC. Close with a cool-down (stillness, slow breathing) to transition out of drama mode.`, say: `"Out of drama mode — back to yourselves. What did you discover today? What do you want to try differently next time?"` }
+      ];
+    } else if (n === 'digital tech' || n.includes('digital')) {
+      return [
+        { do: `Connect activity: pose a real-world question or scenario related to today's topic. "Have you ever wondered why…? Today we're going to understand [title]." Show a quick 60-second video clip or real-world example. Students discuss in pairs: "What do you already know about this?"`, say: `"Before we start — what do you already know? Take 30 seconds and tell your partner."` },
+        { do: `Explicit teaching: demonstrate the concept, tool, or skill on the interactive whiteboard. Step-by-step model — narrate your thinking aloud. Show what "done correctly" looks like. Deconstruct common errors. Key teaching points: ${scArr.slice(0,3).join(' · ')}. Equipment: ${eq}.`, say: `"Watch first, then you'll try. I'll show you each step — ask questions as we go."` },
+        { do: `Guided practice: students attempt the task with support. Provide a step-by-step guide or worked example. Teacher circulates — offer hints rather than answers: "What did you try? What happened? What could you try next?" Use the "three before me" rule (ask 3 peers before asking teacher).`, say: `"Your turn — follow the guide. If you're stuck, check with two people before you put your hand up."` },
+        { do: `Independent or collaborative work: students continue or extend the task. Early finishers: "${s1}" or "${s2}". Teacher conferences with individuals or small groups. Save/screenshot work. Equipment: ${eq}.`, say: `"Working independently now. If you finish early, extend your work — don't just sit. I should see evidence of: ${s0}."` },
+        { do: `Share and reflect: 2–3 students share their work on the projector or with a partner. Whole class: "What did you learn? What was tricky? What would you do differently?" Students complete a reflection prompt in their digital journal.`, say: `"Show and tell — what did you make or figure out today? What's one thing you'd change if you did it again?"` }
+      ];
+    } else if (n === 'french' || n.includes('french') || n.includes('language')) {
+      return [
+        { do: `Greeting routine in French (always consistent): "Bonjour la classe! Comment vous appelez-vous?" Students respond. Quick warm-up: action song, counting, or vocabulary recall game (flash cards, Quizlet live, or whiteboard race). Review prior vocabulary from last lesson.`, say: `"Bonjour! On commence. Répétez après moi — [phrase]."` },
+        { do: `Explicit teaching of today's language focus: "${li}". Model pronunciation clearly — whole phrase, then broken into syllables, then whole again. Use realia, images, or TPR (Total Physical Response) actions. Students echo and repeat. Deconstruct grammar or vocabulary patterns: ${scArr.slice(0,2).join(' · ')}.`, say: `"Écoutez et répétez — listen first, then repeat. Focus on how my mouth is moving."` },
+        { do: `Guided practice: structured oral or written tasks with scaffolding. Pair work — one student asks, one responds. Provide a word bank or sentence frame. Circulate and correct pronunciation gently. Equipment: ${eq}. Focus: "${s0}".`, say: `"Avec votre partenaire — practice with your partner. Use the word bank if you need it."` },
+        { do: `Communicative task: students use today's language in a real context — role play, information gap task, class survey, or short performance. Aim for maximum speaking time. Teacher circulates and takes notes on common errors to address at the end.`, say: `"Now use it for real — in French, as much as possible. This is your chance to communicate."` },
+        { do: `Review and exit: quick whole-class vocabulary review (whiteboards or call-and-response). Self-assess against SC: "${s0}". Preview next lesson. Close with French farewell routine: "Au revoir la classe!"`, say: `"On termine — let's review what we learned today. Au revoir et à bientôt!"` }
+      ];
+    } else {
+      // Generic but meaningful fallback for any subject
+      return [
+        { do: `${cfg.entry || 'Settle students and take the roll.'} Introduce today's learning intention: "${li}". Make the purpose clear — why does this matter? Quick activating activity: turn and tell your partner what you already know about "${title}".`, say: cfg.entSay || `"Today we are learning to ${li}. By the end, you should be able to: ${s0}."` },
+        { do: `Explicit teaching: model today's key concept or skill. Use a worked example, think-aloud, or demonstration. Highlight common mistakes. Involve students: "What do you notice? What do you think comes next?" Key teaching points: ${scArr.slice(0,3).join(' · ')}.`, say: `"Watch me first — I'm going to show you exactly how to approach this, including the tricky parts."` },
+        { do: `Guided practice: students attempt the task with teacher support. Work with a focus group at the front or table while others work in pairs. Circulate — give specific, targeted feedback using the success criteria. Prompt: "${s0}". Equipment: ${eq}.`, say: `"Your turn — have a go. I'll be coming around. If you're stuck, check the SC on the board or ask your partner."` },
+        { do: `Independent or extended task: students work on their own to consolidate today's learning. Challenge: "${s1}". Extension: "${s2}". Teacher conducts brief individual check-ins (2 min each). Adjust task difficulty based on observation.`, say: `"Work independently now — show me what you've understood. If you finish, try the challenge on the board."` },
+        { do: `${cfg.exit || 'Pack up and prepare to leave.'} Exit check: students respond to one prompt — "Today I learned… / I still need help with… / I'm curious about…" Review SC as a class. Note students who need follow-up tomorrow.`, say: cfg.exSay || `"Before you go — thumbs up if you can ${s0}. We'll come back to this tomorrow."` }
+      ];
+    }
+  }
+
+  const generatedSteps = buildSteps(d.subject, d.li, sc, d.equipment, d.title);
+  const stepData = generatedSteps.map((gs, i) => ({
+    do: d.steps && d.steps[i] ? d.steps[i] : gs.do,
+    say: gs.say
+  }));
 
   const pages = [];
 
