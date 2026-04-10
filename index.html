@@ -3,7 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson Lab</title>
+  <title>LessonLab — Lesson planning done in minutes</title>
+  <meta name="description" content="931 structured, ready-to-use lesson plans for F–6 across 9 subjects. Aligned to Victorian Curriculum 2.0 and VTLM 2.0. Generate a full lesson plan in seconds.">
+  <meta name="keywords" content="lesson planning, Victorian Curriculum, primary school, F-6, VTLM 2.0, lesson plans, teacher resources, Australia">
+  <meta name="author" content="LessonLab">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://lessonlab.com.au">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lessonlab.com.au">
+  <meta property="og:title" content="LessonLab — Lesson planning done in minutes">
+  <meta property="og:description" content="931 structured lesson plans for F–6 across 9 subjects. Aligned to Victorian Curriculum 2.0 & VTLM 2.0. Generate a full lesson plan in seconds.">
+  <meta property="og:site_name" content="LessonLab">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="LessonLab — Lesson planning done in minutes">
+  <meta name="twitter:description" content="931 structured lesson plans for F–6 across 9 subjects. Aligned to Victorian Curriculum 2.0 & VTLM 2.0.">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -1159,6 +1174,65 @@
       #header-right { display: none !important; }
       #signInBtn { padding: 6px 12px !important; font-size: 0.85rem !important; }
     }
+
+    /* ── LANDING PAGE SUBJECTS GRID PADDING ── */
+    .subjects-grid {
+      padding: 0 16px;
+    }
+
+    /* ── LANDING HERO: MOBILE ── */
+    @media (max-width: 600px) {
+      #subjectsPanel .ll-hero { padding: 32px 16px 28px !important; }
+      #subjectsPanel .ll-hero-title { font-size: 2rem !important; }
+      #subjectsPanel .ll-hero-sub { font-size: 0.875rem !important; }
+      #subjectsPanel .ll-stats { gap: 16px !important; }
+      #subjectsPanel .ll-stat-num { font-size: 1.5rem !important; }
+      #subjectsPanel .ll-feature-strip { flex-wrap: wrap !important; }
+      #subjectsPanel .ll-feature-strip > div {
+        flex: 0 0 50% !important;
+        box-sizing: border-box !important;
+        border-right: none !important;
+      }
+      #subjectsPanel .ll-feature-strip > div:nth-child(1),
+      #subjectsPanel .ll-feature-strip > div:nth-child(2) {
+        border-bottom: 1px solid #e5e7eb !important;
+      }
+    }
+
+    /* ── LANDING SECTIONS: DARK MODE ── */
+    body.dark-mode #subjectsPanel .ll-feature-strip {
+      background: #16213e !important;
+      border-bottom-color: var(--border) !important;
+    }
+    body.dark-mode #subjectsPanel .ll-feature-strip > div {
+      background: #16213e !important;
+      border-color: var(--border) !important;
+    }
+    body.dark-mode #subjectsPanel .ll-feature-strip .ll-feat-label {
+      color: #60a5fa !important;
+    }
+    body.dark-mode #subjectsPanel .ll-feature-strip .ll-feat-sub {
+      color: #6b7280 !important;
+    }
+    body.dark-mode #subjectsPanel .ll-section-heading span {
+      color: #d1d5db !important;
+    }
+    body.dark-mode #subjectsPanel .ll-section-heading div {
+      background: var(--border) !important;
+    }
+    body.dark-mode #subjectsPanel .ll-partner-teaser {
+      background: linear-gradient(135deg, #1a2744, #162038) !important;
+      border-color: #2d4a7a !important;
+    }
+    body.dark-mode #subjectsPanel .ll-partner-teaser .ll-pt-title {
+      color: #60a5fa !important;
+    }
+    body.dark-mode #subjectsPanel .ll-partner-teaser .ll-pt-desc {
+      color: #93c5fd !important;
+    }
+    body.dark-mode #subjectsPanel .ll-partner-teaser .ll-pt-link {
+      color: #60a5fa !important;
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
@@ -1722,31 +1796,31 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
   <div id="subjectsPanel" class="panel active">
 
     <!-- HERO -->
-    <div style="background:linear-gradient(135deg,#1565C0 0%,#0D47A1 55%,#1565C0 100%);padding:44px 24px 36px;text-align:center;position:relative;overflow:hidden;">
+    <div class="ll-hero" style="background:linear-gradient(135deg,#1565C0 0%,#0D47A1 55%,#1565C0 100%);padding:44px 24px 36px;text-align:center;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-50px;right:-50px;width:220px;height:220px;background:rgba(255,255,255,0.05);border-radius:50%;pointer-events:none;"></div>
       <div style="position:absolute;bottom:-70px;left:-40px;width:260px;height:260px;background:rgba(255,255,255,0.04);border-radius:50%;pointer-events:none;"></div>
       <div style="position:relative;z-index:1;">
         <div style="display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:3px;color:rgba(255,255,255,0.6);text-transform:uppercase;margin-bottom:14px;border:1px solid rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;">Victorian Curriculum 2.0 &amp; VTLM 2.0</div>
-        <div style="font-size:2.6rem;font-weight:800;color:white;margin-bottom:14px;line-height:1.15;">Lesson planning,<br>done in minutes.</div>
-        <div style="font-size:1rem;color:rgba(255,255,255,0.8);max-width:460px;margin:0 auto 30px;line-height:1.6;">Structured, ready-to-use lesson plans for F–6 across 9 subjects. Pick a subject, get a full lesson instantly.</div>
-        <div style="display:flex;justify-content:center;align-items:center;gap:24px;flex-wrap:wrap;">
+        <div class="ll-hero-title" style="font-size:2.6rem;font-weight:800;color:white;margin-bottom:14px;line-height:1.15;">Lesson planning,<br>done in minutes.</div>
+        <div class="ll-hero-sub" style="font-size:1rem;color:rgba(255,255,255,0.8);max-width:460px;margin:0 auto 30px;line-height:1.6;">Structured, ready-to-use lesson plans for F–6 across 9 subjects. Pick a subject, get a full lesson instantly.</div>
+        <div class="ll-stats" style="display:flex;justify-content:center;align-items:center;gap:24px;flex-wrap:wrap;">
           <div style="text-align:center;">
-            <div style="font-size:2rem;font-weight:800;color:white;line-height:1;">931</div>
+            <div class="ll-stat-num" style="font-size:2rem;font-weight:800;color:white;line-height:1;">931</div>
             <div style="font-size:0.65rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">Lessons</div>
           </div>
           <div style="width:1px;height:36px;background:rgba(255,255,255,0.2);"></div>
           <div style="text-align:center;">
-            <div style="font-size:2rem;font-weight:800;color:white;line-height:1;">9</div>
+            <div class="ll-stat-num" style="font-size:2rem;font-weight:800;color:white;line-height:1;">9</div>
             <div style="font-size:0.65rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">Subjects</div>
           </div>
           <div style="width:1px;height:36px;background:rgba(255,255,255,0.2);"></div>
           <div style="text-align:center;">
-            <div style="font-size:2rem;font-weight:800;color:white;line-height:1;">F–6</div>
+            <div class="ll-stat-num" style="font-size:2rem;font-weight:800;color:white;line-height:1;">F–6</div>
             <div style="font-size:0.65rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">Year Levels</div>
           </div>
           <div style="width:1px;height:36px;background:rgba(255,255,255,0.2);"></div>
           <div style="text-align:center;">
-            <div style="font-size:2rem;font-weight:800;color:white;line-height:1;">3</div>
+            <div class="ll-stat-num" style="font-size:2rem;font-weight:800;color:white;line-height:1;">3</div>
             <div style="font-size:0.65rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">Year Bands</div>
           </div>
         </div>
@@ -1754,43 +1828,43 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
     </div>
 
     <!-- FEATURE STRIP -->
-    <div style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;background:white;">
+    <div class="ll-feature-strip" style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;background:white;">
       <div style="flex:1;padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;">
         <div style="font-size:1.3rem;margin-bottom:3px;">⚡</div>
-        <div style="font-size:0.75rem;font-weight:700;color:#1565C0;">Instant plans</div>
-        <div style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">One click, full lesson</div>
+        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Instant plans</div>
+        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">One click, full lesson</div>
       </div>
       <div style="flex:1;padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;">
         <div style="font-size:1.3rem;margin-bottom:3px;">📄</div>
-        <div style="font-size:0.75rem;font-weight:700;color:#1565C0;">Export ready</div>
-        <div style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">DOCX, PDF, print</div>
+        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Export ready</div>
+        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">DOCX, PDF, print</div>
       </div>
       <div style="flex:1;padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;">
         <div style="font-size:1.3rem;margin-bottom:3px;">📅</div>
-        <div style="font-size:0.75rem;font-weight:700;color:#1565C0;">Term Planner</div>
-        <div style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">Full term, minutes</div>
+        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Term Planner</div>
+        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">Full term, minutes</div>
       </div>
       <div style="flex:1;padding:14px 10px;text-align:center;">
         <div style="font-size:1.3rem;margin-bottom:3px;">✏️</div>
-        <div style="font-size:0.75rem;font-weight:700;color:#1565C0;">Editable</div>
-        <div style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">Customise everything</div>
+        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Editable</div>
+        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">Customise everything</div>
       </div>
     </div>
 
     <!-- SUBJECTS HEADING -->
-    <div style="padding:20px 20px 8px;display:flex;align-items:center;gap:12px;">
-      <div style="font-size:0.85rem;font-weight:700;color:#374151;white-space:nowrap;">Choose a subject</div>
+    <div class="ll-section-heading" style="padding:20px 20px 8px;display:flex;align-items:center;gap:12px;">
+      <span style="font-size:0.85rem;font-weight:700;color:#374151;white-space:nowrap;">Choose a subject</span>
       <div style="flex:1;height:1px;background:#e5e7eb;"></div>
     </div>
 
     <div class="subjects-grid" id="subjectsGrid" role="grid" aria-label="Subject selection"></div>
 
     <!-- COMING SOON PARTNER TEASER -->
-    <div style="margin:20px 16px 4px;padding:14px 18px;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1px solid #bae6fd;border-radius:10px;display:flex;align-items:center;gap:14px;">
+    <div class="ll-partner-teaser" style="margin:20px 16px 4px;padding:14px 18px;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1px solid #bae6fd;border-radius:10px;display:flex;align-items:center;gap:14px;">
       <div style="font-size:1.7rem;flex-shrink:0;">🏅</div>
       <div>
-        <div style="font-size:0.78rem;font-weight:700;color:#0369a1;margin-bottom:2px;">Sport-specific &amp; partner units — coming soon</div>
-        <div style="font-size:0.72rem;color:#0c4a6e;line-height:1.4;">AFL, Cricket, Netball, Beyond Blue, CSIRO and more — co-branded curriculum units landing in LessonLab. <span style="color:#0369a1;font-weight:600;">Watch this space.</span></div>
+        <div class="ll-pt-title" style="font-size:0.78rem;font-weight:700;color:#0369a1;margin-bottom:2px;">Sport-specific &amp; partner units — coming soon</div>
+        <div class="ll-pt-desc" style="font-size:0.72rem;color:#0c4a6e;line-height:1.4;">AFL, Cricket, Netball, Beyond Blue, CSIRO and more — co-branded curriculum units landing in LessonLab. <span class="ll-pt-link" style="color:#0369a1;font-weight:600;">Watch this space.</span></div>
       </div>
     </div>
 

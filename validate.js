@@ -53,19 +53,76 @@ try {
 // ─────────────────────────────────────────────────────────────────────────────
 console.log('\n── 2. Equipment Cross-Contamination ─────────────────────────');
 
-// Subject line ranges (1-indexed, inclusive) — covers data declarations AND inline week blocks
-// Each subject can have MULTIPLE ranges (data decl block + inline weeks block)
-const SUBJECT_RANGES_MULTI = {
-  'pe':           [[3092, 3175],  [3716, 3794]],
-  'science':      [[3176, 3331],  [3986, 4054], [4666, 4768]],
-  'visual-art':   [[3332, 3415],  [3795, 3874]],
-  'music':        [[3416, 3463],  [4113, 4162]],
-  'drama':        [[3464, 3511],  [4163, 4212]],
-  'digital_tech': [[3512, 3631],  [4055, 4112]],
-  'french':       [[3632, 3715],  [3875, 3985]],
-  'numeracy':     [[4213, 4481]],
-  'literacy':     [[4482, 4665]],
-};
+// ── Dynamic subject range detection ──────────────────────────────────────────
+// Scan the file for anchor patterns to find where each subject's data lives.
+// This approach is resilient to HTML additions shifting line numbers.
+
+function buildSubjectRanges(lines) {
+  const total = lines.length;
+  const ranges = {};
+
+  // ── 1. Data declaration blocks ──
+  // Anchors: const _peFoundation, const _sciFoundation, const _artFoundation, etc.
+  const DATA_ANCHORS = [
+    { subj: 'pe',           pattern: /^\s*const _peFoundation\s*=/ },
+    { subj: 'science',      pattern: /^\s*const _sciFoundation\s*=/ },
+    { subj: 'visual-art',   pattern: /^\s*const _artFoundation\s*=/ },
+    { subj: 'music',        pattern: /^\s*const _musFoundation\s*=/ },
+    { subj: 'drama',        pattern: /^\s*const _dramaFoundation\s*=/ },
+    { subj: 'digital_tech', pattern: /^\s*const _dtFoundation\s*=/ },
+    { subj: 'french',       pattern: /^\s*const _frFoundation\s*=/ },
+  ];
+  // Find start line of each data block
+  const dataStarts = {};
+  for (let i = 0; i < total; i++) {
+    for (const { subj, pattern } of DATA_ANCHORS) {
+      if (pattern.test(lines[i])) { dataStarts[subj] = i + 1; break; } // 1-indexed
+    }
+  }
+  // End of each data block = start of the next one - 1
+  const dataOrder = ['pe','science','visual-art','music','drama','digital_tech','french'];
+  for (let i = 0; i < dataOrder.length; i++) {
+    const subj = dataOrder[i];
+    const start = dataStarts[subj];
+    if (!start) continue;
+    const nextStart = i + 1 < dataOrder.length ? dataStarts[dataOrder[i+1]] : null;
+    const end = nextStart ? nextStart - 1 : start + 200;
+    ranges[subj] = ranges[subj] || [];
+    ranges[subj].push([start, end]);
+  }
+
+  // ── 2. Inline `if (subj === '...')` blocks ──
+  const INLINE_ANCHORS = [
+    { subj: 'pe',           pattern: /^\s*if \(subj === 'pe'\)/ },
+    { subj: 'visual-art',   pattern: /^\s*if \(subj === 'visual-art'\)/ },
+    { subj: 'french',       pattern: /^\s*if \(subj === 'french'\)/ },
+    { subj: 'science',      pattern: /^\s*if \(subj === 'science'\)/ },
+    { subj: 'digital_tech', pattern: /^\s*if \(subj === 'digital_tech'\)/ },
+    { subj: 'music',        pattern: /^\s*if \(subj === 'music'\)/ },
+    { subj: 'drama',        pattern: /^\s*if \(subj === 'drama'\)/ },
+    { subj: 'numeracy',     pattern: /^\s*if \(subj === 'numeracy'\)/ },
+    { subj: 'literacy',     pattern: /^\s*if \(subj === 'literacy'\)/ },
+    { subj: 'science',      pattern: /^\s*if \(subj === 'stem'\)/ },   // third science block
+  ];
+  const inlineStarts = [];
+  for (let i = 0; i < total; i++) {
+    for (const { subj, pattern } of INLINE_ANCHORS) {
+      if (pattern.test(lines[i])) { inlineStarts.push({ subj, line: i + 1 }); break; }
+    }
+  }
+  // Sort by line number; end of each = start of next - 1
+  inlineStarts.sort((a, b) => a.line - b.line);
+  for (let i = 0; i < inlineStarts.length; i++) {
+    const { subj, line } = inlineStarts[i];
+    const end = i + 1 < inlineStarts.length ? inlineStarts[i+1].line - 1 : total;
+    ranges[subj] = ranges[subj] || [];
+    ranges[subj].push([line, end]);
+  }
+
+  return ranges;
+}
+
+const SUBJECT_RANGES_MULTI = buildSubjectRanges(lines);
 
 // Flatten to a lookup function
 function getSubject(lineno) {
@@ -76,8 +133,6 @@ function getSubject(lineno) {
   }
   return null;
 }
-// Keep backward compat alias
-const SUBJECT_RANGES = {}; // unused but left for clarity
 
 // Fingerprints unique to a subject's equipment — if found in another subject, it's a bug
 // Format: { fingerprint_string: 'owner_subject' }
