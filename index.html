@@ -1960,56 +1960,47 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
   <div class="pricing-modal">
     <button class="pricing-modal-close" onclick="closePricingModal()">&times;</button>
     <h2>Choose your plan</h2>
-    <p class="pricing-subtitle">Unlock the full LessonLab experience for your classroom</p>
-    <div class="pricing-grid">
-      <!-- FREE -->
-      <div class="pricing-card">
-        <div class="pricing-tier">Free</div>
-        <div class="pricing-price">$0 <span>/ month</span></div>
-        <div class="pricing-desc">Great for exploring LessonLab</div>
-        <ul class="pricing-features">
-          <li>Browse units &amp; focuses</li>
-          <li>View curriculum structure</li>
-          <li class="no">Generate lesson plans</li>
-          <li class="no">Year Planner</li>
-          <li class="no">2-Year Cycle Planner</li>
-          <li class="no">Slide generator</li>
-        </ul>
-        <button class="pricing-btn free-btn">Current plan</button>
-      </div>
+    <p class="pricing-subtitle">Start with a 7-day free trial — no credit card required</p>
+    <div class="pricing-grid" style="grid-template-columns: 1fr 1fr;">
       <!-- PRO -->
       <div class="pricing-card featured">
-        <div class="pricing-badge">Most popular</div>
+        <div class="pricing-badge">For classroom teachers</div>
         <div class="pricing-tier">Pro</div>
-        <div class="pricing-price">$9 <span>/ month</span></div>
-        <div class="pricing-desc">Everything you need as a classroom teacher</div>
+        <div class="pricing-price">$12 <span>/ month</span></div>
+        <div class="pricing-desc">Everything you need to plan, generate and teach</div>
         <ul class="pricing-features">
           <li>All 9 subjects</li>
           <li>AI lesson plan generator</li>
-          <li>Year Planner</li>
-          <li>2-Year Cycle Planner</li>
-          <li>Slide generator</li>
+          <li>Year Planner &amp; Cycle Planner</li>
+          <li>Slide generator (PowerPoint export)</li>
           <li>Save &amp; export lessons</li>
+          <li>School branding on all outputs</li>
+          <li>DOCX template upload</li>
+          <li>7-day free trial</li>
         </ul>
-        <button class="pricing-btn pro-btn" id="proUpgradeBtn" onclick="startCheckout('pro')">Get Pro</button>
+        <button class="pricing-btn pro-btn" id="proUpgradeBtn" onclick="startCheckout('pro')">Start free trial</button>
         <div class="pricing-current" id="proCurrentLabel" style="display:none">Your current plan</div>
       </div>
       <!-- SCHOOL -->
       <div class="pricing-card">
+        <div class="pricing-badge" style="background:#6D28D9;">For whole schools</div>
         <div class="pricing-tier">School</div>
-        <div class="pricing-price">$29 <span>/ month</span></div>
-        <div class="pricing-desc">For whole-school curriculum planning</div>
+        <div class="pricing-price">$39 <span>/ month</span></div>
+        <div class="pricing-desc">Built for curriculum leaders &amp; leadership teams</div>
         <ul class="pricing-features">
           <li>Everything in Pro</li>
-          <li>School branding on slides</li>
-          <li>Whole-school journey planner</li>
-          <li>Team collaboration (coming soon)</li>
-          <li>Priority support</li>
+          <li>School colour theming across all slides</li>
+          <li>Priority email support</li>
+          <li>Team accounts <span style="font-size:11px;color:#888;">(coming soon)</span></li>
+          <li>Admin dashboard <span style="font-size:11px;color:#888;">(coming soon)</span></li>
+          <li>Whole-school journey planner <span style="font-size:11px;color:#888;">(coming soon)</span></li>
+          <li>7-day free trial</li>
         </ul>
-        <button class="pricing-btn school-btn" id="schoolUpgradeBtn" onclick="startCheckout('school')">Get School</button>
+        <button class="pricing-btn school-btn" id="schoolUpgradeBtn" onclick="startCheckout('school')">Start free trial</button>
         <div class="pricing-current" id="schoolCurrentLabel" style="display:none">Your current plan</div>
       </div>
     </div>
+    <p style="text-align:center;font-size:12px;color:#888;margin-top:16px;">Prices in AUD. Cancel anytime. No lock-in contracts.</p>
   </div>
 </div>
 <!-- PHASE 2: UNIT PLANNER -->
@@ -8085,19 +8076,24 @@ function showPricingModal() {
   const modal = document.getElementById('pricingModal');
   if (!modal) return;
   modal.style.display = 'flex';
-  const tier = currentProfile ? currentProfile.tier : 'free';
+  const tier = currentProfile ? currentProfile.tier : null;
   const proBtn = document.getElementById('proUpgradeBtn');
   const schoolBtn = document.getElementById('schoolUpgradeBtn');
   const proLabel = document.getElementById('proCurrentLabel');
   const schoolLabel = document.getElementById('schoolCurrentLabel');
+  // Reset state
+  if (proBtn) { proBtn.disabled = false; proBtn.textContent = 'Start free trial'; }
+  if (schoolBtn) { schoolBtn.disabled = false; schoolBtn.textContent = 'Start free trial'; }
+  if (proLabel) proLabel.style.display = 'none';
+  if (schoolLabel) schoolLabel.style.display = 'none';
   if (tier === 'pro') {
-    proBtn.disabled = true; proBtn.textContent = 'Current plan';
-    proLabel.style.display = 'block';
-    schoolBtn.textContent = 'Upgrade to School';
+    if (proBtn) { proBtn.disabled = true; proBtn.textContent = 'Current plan'; }
+    if (proLabel) proLabel.style.display = 'block';
+    if (schoolBtn) schoolBtn.textContent = 'Upgrade to School';
   } else if (tier === 'school') {
-    schoolBtn.disabled = true; schoolBtn.textContent = 'Current plan';
-    schoolLabel.style.display = 'block';
-    proBtn.textContent = 'Already included'; proBtn.disabled = true;
+    if (schoolBtn) { schoolBtn.disabled = true; schoolBtn.textContent = 'Current plan'; }
+    if (schoolLabel) schoolLabel.style.display = 'block';
+    if (proBtn) { proBtn.textContent = 'Included in School'; proBtn.disabled = true; }
   }
 }
 
