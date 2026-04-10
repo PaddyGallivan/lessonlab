@@ -53,43 +53,82 @@ try {
 // ─────────────────────────────────────────────────────────────────────────────
 console.log('\n── 2. Equipment Cross-Contamination ─────────────────────────');
 
-// Subject line ranges (1-indexed, inclusive)
-const SUBJECT_RANGES = {
-  'pe':           [3647, 3725],
-  'visual-art':   [3726, 3805],
-  'french':       [3562, 3916],
-  'science':      [3917, 3985],
-  'digital_tech': [3986, 4043],
-  'music':        [4044, 4093],
-  'drama':        [4094, 4143],
-  'numeracy':     [4144, 4412],
-  'literacy':     [4413, 4596],
+// Subject line ranges (1-indexed, inclusive) — covers data declarations AND inline week blocks
+// Each subject can have MULTIPLE ranges (data decl block + inline weeks block)
+const SUBJECT_RANGES_MULTI = {
+  'pe':           [[3023, 3106],  [3648, 3726]],
+  'science':      [[3107, 3262],  [3918, 3986], [4598, 4699]],
+  'visual-art':   [[3263, 3346],  [3727, 3806]],
+  'music':        [[3347, 3394],  [4045, 4094]],
+  'drama':        [[3395, 3442],  [4095, 4145]],
+  'digital_tech': [[3443, 3562],  [3987, 4044]],
+  'french':       [[3563, 3647],  [3807, 3917]],
+  'numeracy':     [[4146, 4412]],
+  'literacy':     [[4413, 4597]],
 };
 
-// Fingerprints unique to a subject's equipment
+// Flatten to a lookup function
+function getSubject(lineno) {
+  for (const [subj, ranges] of Object.entries(SUBJECT_RANGES_MULTI)) {
+    for (const [start, end] of ranges) {
+      if (lineno >= start && lineno <= end) return subj;
+    }
+  }
+  return null;
+}
+// Keep backward compat alias
+const SUBJECT_RANGES = {}; // unused but left for clarity
+
+// Fingerprints unique to a subject's equipment — if found in another subject, it's a bug
 // Format: { fingerprint_string: 'owner_subject' }
 const EQ_FINGERPRINTS = {
+  // French
   'Pronunciation file playback':     'french',
   'Native speaker audio:':           'french',
   'Sentence strips: Structure cards':'french',
-  'Family tree template':            'french',    // French family unit
+  'Family tree template':            'french',
+  // Music
   'Notation cards: Visual rhythm':   'music',
   'Rhythm instruments:':             'music',
   'Boomwhackers':                    'music',
   'Glockenspiel':                    'music',
   'Xylophones:':                     'music',
+  // PE
   'Bibs:':                           'pe',
   'Goal posts':                      'pe',
   'Racquets:':                       'pe',
+  'Portable net':                    'pe',     // catches net-wall PE eq in wrong subject
+  // Visual Art
   'Watercolour paints:':             'visual-art',
   'Acrylic paints:':                 'visual-art',
+  'Mixing palettes:':                'visual-art',
+  'Paintbrushes:':                   'visual-art',
   'Clay:':                           'visual-art',
   'Art smocks':                      'visual-art',
+  // Drama
   'Hot-seating':                     'drama',
   'Costume pieces:':                 'drama',
+  // Science
   'Safety goggles:':                 'science',
+  'Tuning forks:':                   'science',
+  'Iron filings:':                   'science',
+  'Prisms:':                         'science',
+  'Planet models:':                  'science',
+  'Star chart:':                     'science',
+  // Digital Tech
   'Scratch:':                        'digital_tech',
   'Micro:bit':                       'digital_tech',
+  'Python IDE':                      'digital_tech',
+  'Thonny':                          'digital_tech',
+  // Numeracy
+  'MAB blocks:':                     'numeracy',
+  'Fraction bars:':                  'numeracy',
+  'Base-10 blocks:':                 'numeracy',
+  'Place value chart':               'numeracy',
+  // Literacy
+  'Phonics cards:':                  'literacy',
+  'Decodable readers:':              'literacy',
+  'Letter tiles:':                   'literacy',
 };
 
 // Allowlist: subject that may legitimately borrow from another
@@ -111,10 +150,7 @@ lines.forEach((line, idx) => {
   const eqVal = eqMatch[1];
 
   // Determine host subject
-  let hostSubj = null;
-  for (const [subj, [start, end]] of Object.entries(SUBJECT_RANGES)) {
-    if (lineno >= start && lineno <= end) { hostSubj = subj; break; }
-  }
+  const hostSubj = getSubject(lineno);
   if (!hostSubj) return;
 
   // Check fingerprints
