@@ -7469,6 +7469,15 @@ function updateSubjectLocking() {
       const lockIcon = card.querySelector('.subject-lock-icon');
       if (lockIcon) lockIcon.remove();
       card.style.cursor = 'pointer';
+      // Restore original onclick (may have been overridden by the lock handler)
+      if (subject === 'Year Planner') {
+        card.onclick = () => initYearPlanner();
+      } else {
+        const subjKey = Object.keys(SUBJ_CFG).find(k => SUBJ_CFG[k].name === subject);
+        if (subjKey) {
+          card.onclick = () => selectSubject(subjKey, SUBJ_CFG[subjKey]);
+        }
+      }
     }
   });
 }
