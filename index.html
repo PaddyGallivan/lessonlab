@@ -6568,10 +6568,8 @@ function saveCyclePlanNamed() {
 function loadCyclePlanNamed() {
   const saved = JSON.parse(localStorage.getItem('lessonlab_cycle_saved') || '[]');
   if (!saved.length) { showToast('No saved cycle plans found.', 'error'); return; }
-  const list = saved.map((s, i) => (i+1) + '. ' + s.name + ' (' + s.date + ')').join('
-');
-  const choice = prompt('Enter number to load:
-' + list);
+  const list = saved.map((s, i) => (i+1) + '. ' + s.name + ' (' + s.date + ')').join(String.fromCharCode(10));
+  const choice = prompt('Enter number to load:' + String.fromCharCode(10) + list);
   if (!choice) return;
   const idx = parseInt(choice) - 1;
   if (saved[idx]) {
@@ -6595,8 +6593,7 @@ function exportCyclePlanCSV() {
       rows.push(row);
     });
   });
-  const csv = rows.map(r => r.map(c => '"'+c+'"').join(',')).join('
-');
+  const csv = rows.map(r => r.map(c => '"'+c+'"').join(',')).join(String.fromCharCode(10));
   const a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
   a.download = 'CyclePlan_' + currentCycleComposite.replace('/','_') + '.csv';
