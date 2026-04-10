@@ -10164,6 +10164,23 @@ async function startCheckout(tier) {
   }
 }
 
+async function openBillingPortal() {
+  var btn = document.getElementById('manageSubBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⚙️ Loading...'; }
+  try {
+    var data = await api('/stripe/portal');
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      showToast(data.error || 'Could not open billing portal.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = '⚙️ Manage subscription & billing →'; }
+    }
+  } catch(e) {
+    showToast('Network error. Please try again.', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '⚙️ Manage subscription & billing →'; }
+  }
+}
+
 async function handleUpgrade() {
   if (!currentUser) {
     showToast('Please sign in to upgrade', 'error');
@@ -10469,6 +10486,9 @@ function openAccountSettings() {
   var ctaEl = document.getElementById('acctUpgradeCta');
   if (ctaEl) ctaEl.style.display = (tier === 'free') ? 'block' : 'none';
 
+  var manageSubEl = document.getElementById('acctManageSubscription');
+  if (manageSubEl) manageSubEl.style.display = (tier !== 'free' && currentProfile && currentProfile.stripe_customer_id) ? 'block' : 'none';
+
   modal.style.display = 'flex';
 }
 function closeAccountSettings() {
@@ -10597,6 +10617,12 @@ async function saveAccountSettings() {
       <div id="acctUpgradeCta" style="display:none;margin-top:0.625rem;padding:0.625rem 0.875rem;background:linear-gradient(135deg,#7c3aed,#4f46e5);border-radius:0.375rem;cursor:pointer;" onclick="closeAccountSettings();showPricingModal();">
         <div style="font-size:0.8rem;font-weight:700;color:white;">✨ Upgrade to Pro</div>
         <div style="font-size:0.72rem;color:#ddd6fe;margin-top:0.1rem;">Unlock all 9 subjects + slide generator</div>
+      </div>
+      <!-- Manage subscription for paid users -->
+      <div id="acctManageSubscription" style="display:none;margin-top:0.625rem;">
+        <button id="manageSubBtn" onclick="openBillingPortal()" style="width:100%;padding:0.5rem 0.875rem;background:transparent;border:1px solid #d1d5db;border-radius:0.375rem;font-size:0.8rem;font-weight:500;color:#374151;cursor:pointer;text-align:left;display:flex;align-items:center;gap:0.5rem;">
+          <span>⚙️</span> Manage subscription &amp; billing →
+        </button>
       </div>
     </div>
 
