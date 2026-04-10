@@ -1964,7 +1964,7 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
     <div class="pricing-grid" style="grid-template-columns:1fr;">
       <div class="pricing-card featured" style="max-width:100%;">
         <div class="pricing-price" style="font-size:2.8rem;">$12 <span>/ month</span></div>
-        <div class="pricing-desc" style="margin-bottom:20px;">7-day free trial &mdash; cancel anytime</div>
+        <div class="pricing-desc" style="margin-bottom:20px;">Cancel anytime. No lock-in.</div>
         <ul class="pricing-features">
           <li>All 9 subjects (Maths, Literacy, PE, Art, Music, Drama, French &amp; more)</li>
           <li>AI lesson plan generator — full unit sequences</li>
@@ -1974,11 +1974,11 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
           <li>School branding — logo, colours, footer</li>
           <li>DOCX template upload</li>
         </ul>
-        <button class="pricing-btn pro-btn" id="proUpgradeBtn" onclick="startCheckout('pro')" style="width:100%;margin-top:8px;font-size:1.1rem;padding:14px;">Start free trial</button>
+        <button class="pricing-btn pro-btn" id="proUpgradeBtn" onclick="startCheckout('pro')" style="width:100%;margin-top:8px;font-size:1.1rem;padding:14px;">Get LessonLab — $12/mo</button>
         <div class="pricing-current" id="proCurrentLabel" style="display:none;text-align:center;margin-top:12px;font-weight:600;color:#1565C0;">✓ Your current plan</div>
       </div>
     </div>
-    <p style="text-align:center;font-size:12px;color:#888;margin-top:16px;">Prices in AUD &nbsp;·&nbsp; No lock-in &nbsp;·&nbsp; Cancel anytime</p>
+    <p style="text-align:center;font-size:12px;color:#888;margin-top:16px;">Prices in AUD &nbsp;·&nbsp; Billed monthly &nbsp;·&nbsp; Cancel anytime</p>
   </div>
 </div>
 <!-- PHASE 2: UNIT PLANNER -->
@@ -8058,7 +8058,7 @@ function showPricingModal() {
   const btn = document.getElementById('proUpgradeBtn');
   const label = document.getElementById('proCurrentLabel');
   const isSubscribed = tier === 'pro' || tier === 'school';
-  if (btn) { btn.disabled = isSubscribed; btn.textContent = isSubscribed ? 'Current plan' : 'Start free trial'; }
+  if (btn) { btn.disabled = isSubscribed; btn.textContent = isSubscribed ? 'Current plan' : 'Get LessonLab — $12/mo'; }
   if (label) label.style.display = isSubscribed ? 'block' : 'none';
 }
 
@@ -8083,11 +8083,11 @@ async function startCheckout(tier) {
       window.location.href = data.url;
     } else {
       showToast(data.error || 'Checkout failed. Please try again.', 'error');
-      if (btn) { btn.disabled = false; btn.textContent = 'Start free trial'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Get LessonLab — $12/mo'; }
     }
   } catch(e) {
     showToast('Network error. Please try again.', 'error');
-    if (btn) { btn.disabled = false; btn.textContent = 'Start free trial'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Get LessonLab — $12/mo'; }
   }
 }
 
