@@ -10034,7 +10034,7 @@ async function handleForgotPassword(email) {
   if (forgotError) forgotError.innerHTML = '';
   if (forgotSuccess) forgotSuccess.innerHTML = '';
   try {
-    const res = await fetch(API_BASE + '/auth/forgot-password', {
+    const res = await fetch(API_URL + '/auth/forgot-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -10302,13 +10302,7 @@ async function startCheckout(tier) {
   const btn = document.getElementById(btnId);
   if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
   try {
-    const token = localStorage.getItem('ll_token');
-    const res = await fetch('https://lessonlab-api.pgallivan.workers.dev/stripe/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ tier })
-    });
-    const data = await res.json();
+    const data = await api('/stripe/checkout', { method: 'POST', body: JSON.stringify({ tier }) });
     if (data.url) {
       window.location.href = data.url;
     } else {
@@ -10325,7 +10319,7 @@ async function openBillingPortal() {
   var btn = document.getElementById('manageSubBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⚙️ Loading...'; }
   try {
-    var data = await api('/stripe/portal');
+    var data = await api('/stripe/portal', { method: 'POST' });
     if (data.url) {
       window.location.href = data.url;
     } else {
@@ -10554,28 +10548,40 @@ async function deleteSavedLesson(id, btn) {
 async function loadSavedLesson(id) {
   try {
     var data = await api('/lessons/' + id);
-    if (!data || !data.lesson_data) { showToast('Could not load lesson data.', 'error'); return; }
-    var ld = data.lesson_data;
-    // Close the modal
+    if (!data || data.error) { showToast(data && data.error ? data.error : 'Could not load lesson.', 'error'); return; }
+    var ld = data.lesson_data || {};
     var modal = document.getElementById('myLessonsModal');
     if (modal) modal.remove();
-    // Apply lesson to the current view — populate the lesson fields
-    if (typeof displayLesson === 'function' && ld) {
-      displayLesson(ld);
-      showToast('Lesson loaded: ' + (data.title || 'Untitled'), 'success');
-    } else {
-      // Fallback: show the lesson data in a simple popup
-      var popup = document.createElement('div');
-      popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:5000;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;';
-      popup.innerHTML = '<div style="background:white;border-radius:12px;max-width:760px;width:100%;padding:28px;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
-        '<h3 style="margin:0;font-size:1.1rem;font-weight:700;">' + (data.title || 'Lesson') + '</h3>' +
-        '<button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#6b7280;">&times;</button></div>' +
-        '<pre style="white-space:pre-wrap;word-break:break-word;font-size:0.8rem;color:#374151;background:#f9fafb;padding:16px;border-radius:8px;max-height:60vh;overflow-y:auto;">' +
-        JSON.stringify(ld, null, 2) + '</pre></div>';
-      popup.addEventListener('click', function(e){ if(e.target===popup) popup.remove(); });
-      document.body.appendChild(popup);
-    }
+
+    // Build a clean readable lesson view
+    var sc = Array.isArray(data.success_criteria) ? data.success_criteria : [];
+    var scHtml = sc.length ? sc.map(function(s){ return '<li style="margin-bottom:4px;">' + s + '</li>'; }).join('') : '<li style="color:#9ca3af;">—</li>';
+    var meta = [data.subject, data.year_level ? 'Year ' + data.year_level : '', data.term ? 'Term ' + data.term : '', data.week ? 'Week ' + data.week : ''].filter(Boolean).join(' · ');
+
+    var popup = document.createElement('div');
+    popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:5000;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;';
+    popup.innerHTML =
+      '<div style="background:white;border-radius:14px;max-width:720px;width:100%;padding:28px 30px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:12px;">' +
+          '<div>' +
+            '<div style="font-size:1.15rem;font-weight:700;color:#111827;">' + (data.title || 'Untitled Lesson') + '</div>' +
+            '<div style="font-size:0.8rem;color:#6b7280;margin-top:3px;">' + meta + '</div>' +
+          '</div>' +
+          '<button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#6b7280;flex-shrink:0;">&times;</button>' +
+        '</div>' +
+        '<div style="background:#eff6ff;border-radius:8px;padding:14px 16px;margin-bottom:14px;">' +
+          '<div style="font-size:0.75rem;font-weight:600;color:#1d4ed8;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Learning Intention</div>' +
+          '<div style="font-size:0.9rem;color:#1e3a5f;">' + (data.learning_intention || '—') + '</div>' +
+        '</div>' +
+        '<div style="background:#f0fdf4;border-radius:8px;padding:14px 16px;margin-bottom:14px;">' +
+          '<div style="font-size:0.75rem;font-weight:600;color:#15803d;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Success Criteria</div>' +
+          '<ul style="margin:0;padding-left:18px;font-size:0.875rem;color:#14532d;">' + scHtml + '</ul>' +
+        '</div>' +
+        (data.equipment ? '<div style="background:#fafafa;border-radius:8px;padding:14px 16px;margin-bottom:14px;"><div style="font-size:0.75rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Equipment</div><div style="font-size:0.875rem;color:#374151;">' + data.equipment + '</div></div>' : '') +
+        '<button onclick="this.closest(\'div[style*=fixed]\').remove()" style="margin-top:6px;padding:9px 20px;background:#f3f4f6;color:#374151;border:none;border-radius:8px;cursor:pointer;font-size:0.875rem;font-weight:600;">Close</button>' +
+      '</div>';
+    popup.addEventListener('click', function(e){ if(e.target===popup) popup.remove(); });
+    document.body.appendChild(popup);
   } catch(e) {
     showToast('Failed to load lesson.', 'error');
   }
@@ -10636,14 +10642,59 @@ console.log('LessonLab Auth & Cloud Integration loaded successfully');
   async function loadAdminUsers() {
     var statusEl = document.getElementById('adminLoadStatus');
     var tableEl  = document.getElementById('adminUsersTable');
-    statusEl.textContent = 'Admin panel not available in this version.';
+    statusEl.textContent = 'Loading…';
     tableEl.innerHTML = '';
+    try {
+      var d = await api('/admin/users');
+      if (d.error) { statusEl.textContent = 'Error: ' + d.error; return; }
+      // Stats
+      var s = d.stats || {};
+      var setEl = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+      setEl('adminStatTotal', s.total || 0);
+      setEl('adminStatFree', s.free || 0);
+      setEl('adminStatPro', s.pro || 0);
+      setEl('adminStatLessons', s.totalLessons || 0);
+      statusEl.textContent = '';
+      // Table
+      var rows = (d.users || []).map(function(u) {
+        var tierColour = u.tier === 'pro' || u.tier === 'school' ? '#7c3aed' : u.tier === 'free' ? '#92400e' : '#374151';
+        var date = u.created_at ? new Date(u.created_at).toLocaleDateString('en-AU') : '';
+        return '<tr style="border-bottom:1px solid #f3f4f6;">' +
+          '<td style="padding:8px 6px;font-size:0.8rem;color:#111827;">' + (u.email || '') + '</td>' +
+          '<td style="padding:8px 6px;font-size:0.8rem;color:#6b7280;">' + (u.display_name || '') + '</td>' +
+          '<td style="padding:8px 6px;"><span style="font-size:0.75rem;font-weight:600;color:' + tierColour + ';">' + (u.tier || 'free') + '</span></td>' +
+          '<td style="padding:8px 6px;font-size:0.75rem;color:#6b7280;">' + (u.lesson_count || 0) + '</td>' +
+          '<td style="padding:8px 6px;font-size:0.75rem;color:#9ca3af;">' + date + '</td>' +
+          '<td style="padding:8px 6px;">' +
+            '<select onchange="adminSetTier(\'' + u.id + '\',this.value)" style="font-size:0.75rem;padding:3px 6px;border:1px solid #d1d5db;border-radius:4px;">' +
+            ['free','pro','school'].map(function(t){ return '<option value="' + t + '"' + (u.tier===t?' selected':'') + '>' + t + '</option>'; }).join('') +
+            '</select></td>' +
+        '</tr>';
+      }).join('');
+      tableEl.innerHTML = '<table style="width:100%;border-collapse:collapse;">' +
+        '<thead><tr style="border-bottom:2px solid #e5e7eb;">' +
+        '<th style="padding:6px;text-align:left;font-size:0.75rem;color:#6b7280;">Email</th>' +
+        '<th style="padding:6px;text-align:left;font-size:0.75rem;color:#6b7280;">Name</th>' +
+        '<th style="padding:6px;text-align:left;font-size:0.75rem;color:#6b7280;">Tier</th>' +
+        '<th style="padding:6px;text-align:left;font-size:0.75rem;color:#6b7280;">Lessons</th>' +
+        '<th style="padding:6px;text-align:left;font-size:0.75rem;color:#6b7280;">Joined</th>' +
+        '<th style="padding:6px;text-align:left;font-size:0.75rem;color:#6b7280;">Change</th>' +
+        '</thead><tbody>' + rows + '</tbody></table>';
+    } catch(e) {
+      statusEl.textContent = 'Failed to load users.';
+    }
   }
-  async function adminUpdateTier(uid, tier) {
-    showToast('Admin tier update not available', 'error');
+  async function adminSetTier(userId, tier) {
+    // Find user email from the table
+    var data = await api('/admin/users');
+    var user = (data.users || []).find(function(u){ return u.id === userId; });
+    if (!user) { showToast('User not found', 'error'); return; }
+    var r = await api('/admin/set-tier', { method: 'POST', body: JSON.stringify({ email: user.email, tier }) });
+    if (r.success) { showToast('Tier updated to ' + tier, 'success'); }
+    else { showToast(r.error || 'Failed to update tier', 'error'); loadAdminUsers(); }
   }
   async function adminToggleAdmin(uid, makeAdmin) {
-    showToast('Admin toggle not available', 'error');
+    showToast('Use set-tier endpoint directly for admin flag.', 'info');
   }
 
 function openAccountSettings() {
@@ -10806,7 +10857,7 @@ async function submitResetPassword(token) {
   }
   if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
   try {
-    var res = await fetch(API_BASE + '/auth/reset-password', {
+    var res = await fetch(API_URL + '/auth/reset-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, new_password: pw })
@@ -10822,8 +10873,7 @@ async function submitResetPassword(token) {
     setTimeout(function() {
       var modal = document.getElementById('resetPwModal');
       if (modal) modal.remove();
-      document.getElementById('authModal').classList.add('show');
-      switchAuthTab('signin');
+      showAuthModal('signin');
       showToast('Password updated — please sign in.', 'success');
     }, 1800);
   } catch(e) {
