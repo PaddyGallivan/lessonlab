@@ -4830,6 +4830,27 @@ const frYearMap = {'Foundation': _frFoundation, 'Years 1-2': _fr12, 'Years 5-6':
 // BUILD LESSON HTML
 // ============================================================================
 
+// ============================================================================
+// EXIT TICKET GENERATOR
+// ============================================================================
+function generateExitTicket(sc, li) {
+  const criteria = (typeof sc === 'string' ? sc.split('\n') : (sc || [])).filter(s => s.trim());
+  if (!criteria.length) return 'Ask students: What did you learn today? What questions do you still have?';
+  const prompts = [];
+  const c0 = criteria[0].replace(/^I can /i, '').replace(/^Students can /i, '');
+  prompts.push('Quick check: Can you ' + c0 + '? Show me / write one example.');
+  if (criteria[1]) {
+    const c1 = criteria[1].replace(/^I can /i, '').replace(/^Students can /i, '');
+    prompts.push('Explain in your own words: how would you ' + c1 + '?');
+  } else {
+    prompts.push('In one sentence, explain what you learned today about: ' + li + '.');
+  }
+  prompts.push('Rate yourself 1\u20134: 1 = I need more help \u00b7 2 = I\u2019m getting there \u00b7 3 = I can do it \u00b7 4 = I can explain it to someone else.');
+  return prompts.join(' | ');
+}
+function getExitTicketLines(exitTicket) {
+  return exitTicket ? exitTicket.split(' | ') : [];
+}
 function buildHTML(d, cfg, cds) {
   const subjKey = Object.keys(SUBJ_CFG).find(k => SUBJ_CFG[k].name === d.subject);
   const scaff = (typeof SCAFFOLDS !== 'undefined' && SCAFFOLDS[subjKey]) ? SCAFFOLDS[subjKey] : {};
@@ -5271,6 +5292,7 @@ ${d.grouping ? `<div style="margin-top:4px;padding:6px 8px;background:#E8F5E9;bo
 </td>
 </tr>
 </table>
+${d.exitTicket ? '<div style="margin-top:16px;padding:10px;background:#E8F5FD;border:1.5px solid #2196F3;border-radius:4px;"><div style="font-weight:bold;color:#0D47A1;margin-bottom:8px;font-size:12px;">EXIT TICKET \u2014 Lesson assessment prompts</div>' + getExitTicketLines(d.exitTicket).map(function(line,i){return '<div style="margin-bottom:6px;font-size:11px;"><strong>'+(i+1)+'.</strong> '+line+'</div><div style="border:1px solid #90CAF9;min-height:30px;border-radius:3px;background:white;margin-bottom:8px;"></div>';}).join('') + '</div>' : ''}
 
 <div class="footer">${(typeof schoolBranding !== 'undefined' && schoolBranding.footerText) ? schoolBranding.footerText : d.school + ' · ' + (cfg.full || cfg.name) + ' · ' + d.year + ' Term ' + d.term + ' Week ' + d.week + ' · Victorian Curriculum 2.0 · VTLM 2.0'}</div>
 </div>`);
@@ -5969,7 +5991,8 @@ function generateAll() {
       equipment: lessonData.equipment,
       context: lessonData.context,
       logo: logoData,
-      differentiation: lessonData.differentiation || null
+      differentiation: lessonData.differentiation || null,
+  exitTicket: generateExitTicket(lessonData.sc, lessonData.li)
     };
 
     buildHTMLAsync(fullData, state.subjectCfg, cds).then(function(html) {
