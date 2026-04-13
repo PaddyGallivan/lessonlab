@@ -2098,31 +2098,60 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
     </div>
   </div>
 
-  <!-- PRICING MODAL -->
+  <!-- PRICING MODAL (subject selection) -->
 <div id="pricingModal" class="pricing-modal-overlay" style="display:none">
-  <div class="pricing-modal" style="max-width:640px;">
+  <div class="pricing-modal" style="max-width:720px;">
     <button class="pricing-modal-close" onclick="closePricingModal()">&times;</button>
-    <h2 style="text-align:center;">LessonLab</h2>
-    <p class="pricing-subtitle" style="text-align:center;">Every feature. Built for Australian teachers.</p>
-    <div class="pricing-grid" style="grid-template-columns:1fr;gap:14px;max-width:340px;margin:0 auto;">
-      <!-- PRO -->
-      <div class="pricing-card featured" style="max-width:100%;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1565C0;margin-bottom:4px;">Pro</div>
-        <div class="pricing-price" style="font-size:2.2rem;">$12 <span>/ mo</span></div>
-        <div class="pricing-desc" style="margin-bottom:14px;font-size:13px;">For individual teachers.</div>
-        <ul class="pricing-features" style="margin-bottom:14px;">
-          <li>✅ Victorian Curriculum 2.0 aligned</li>
-          <li>All 9 subject areas</li>
-          <li>Save unlimited lessons</li>
-          <li>Term, Year &amp; Cycle Planners</li>
-          <li>PowerPoint slide export</li>
-          <li>PDF &amp; Word export</li>
-        </ul>
-        <button class="pricing-btn pro-btn" id="proUpgradeBtn" onclick="startCheckout('pro')" style="width:100%;margin-top:auto;font-size:1rem;padding:12px;">Get Pro — $12/mo</button>
-        <div class="pricing-current" id="proCurrentLabel" style="display:none;text-align:center;margin-top:10px;font-weight:600;color:#1565C0;font-size:13px;">✓ Your current plan</div>
+    <h2 style="text-align:center;font-size:1.6rem;font-weight:800;color:#1a1a2e;">Choose Your Subjects</h2>
+    <p class="pricing-subtitle">Pay only for what you teach. Add more anytime.</p>
+
+    <!-- Subject grid -->
+    <div id="subjectPricingGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0;">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Add-ons section -->
+    <div style="border-top:1px solid #eee;padding-top:20px;margin-top:4px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#888;margin-bottom:12px;">Add-ons</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        <div id="addonCard_year_planner" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:1.1rem;margin-bottom:4px;">📅</div>
+          <div style="font-weight:700;font-size:13px;">Year Planner</div>
+          <div style="font-size:12px;color:#888;margin:3px 0 10px;">$12/mo</div>
+          <button id="addonBtn_year_planner" class="pricing-btn pro-btn" onclick="startAddonCheckout('year_planner')" style="padding:7px 10px;font-size:12px;width:100%;">Add — $12/mo</button>
+        </div>
+        <div id="addonCard_cycle_planner" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:1.1rem;margin-bottom:4px;">🔄</div>
+          <div style="font-weight:700;font-size:13px;">Cycle Planner</div>
+          <div style="font-size:12px;color:#888;margin:3px 0 10px;">$8/mo</div>
+          <button id="addonBtn_cycle_planner" class="pricing-btn pro-btn" onclick="startAddonCheckout('cycle_planner')" style="padding:7px 10px;font-size:12px;width:100%;">Add — $8/mo</button>
+        </div>
+        <div id="addonCard_full_units" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:1.1rem;margin-bottom:4px;">📚</div>
+          <div style="font-weight:700;font-size:13px;">Full Units</div>
+          <div style="font-size:12px;color:#888;margin:3px 0 10px;">$8 one-time / subject</div>
+          <button id="addonBtn_full_units" class="pricing-btn pro-btn" onclick="startAddonCheckout('full_units')" style="padding:7px 10px;font-size:12px;width:100%;">Add — $8</button>
+        </div>
       </div>
     </div>
-    <p style="text-align:center;font-size:12px;color:#888;margin-top:16px;">Prices in AUD &nbsp;·&nbsp; Billed monthly &nbsp;·&nbsp; Cancel anytime</p>
+
+    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:16px;">Prices in AUD &nbsp;·&nbsp; Billed monthly &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="closePricingModal();openBillingPortal()">Manage billing</span></p>
+  </div>
+</div>
+
+<!-- SUBJECT UPGRADE MODAL (single subject prompt) -->
+<div id="subjectUpgradeModal" class="pricing-modal-overlay" style="display:none">
+  <div class="pricing-modal" style="max-width:400px;text-align:center;">
+    <button class="pricing-modal-close" onclick="document.getElementById('subjectUpgradeModal').style.display='none'">&times;</button>
+    <div style="font-size:3rem;margin-bottom:8px;" id="subjectUpgradeIcon">📚</div>
+    <h2 style="font-size:1.3rem;margin-bottom:6px;" id="subjectUpgradeTitle">Unlock this subject</h2>
+    <p style="color:#666;font-size:14px;margin-bottom:20px;" id="subjectUpgradeDesc">Get full access to lesson generation, saving, and planning for this subject.</p>
+    <div style="background:#f8f9ff;border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div id="subjectUpgradePrice" style="font-size:2rem;font-weight:800;color:#1565C0;">$12<span style="font-size:1rem;font-weight:500;color:#888;">/mo</span></div>
+      <div style="font-size:12px;color:#888;margin-top:4px;" id="subjectUpgradePriceNote">First subject · More subjects $5/mo each</div>
+    </div>
+    <button id="subjectUpgradeBtn" class="pricing-btn pro-btn" style="width:100%;padding:14px;font-size:1rem;" onclick="confirmSubjectCheckout()">Get Access — $12/mo</button>
+    <p style="font-size:11px;color:#aaa;margin-top:12px;">Cancel anytime. Secure checkout via Stripe.</p>
   </div>
 </div>
 <!-- PHASE 2: UNIT PLANNER -->
@@ -5535,7 +5564,32 @@ function updateSummary() {
 var FREE_GEN_LIMIT = 3;
 function getGenCount() { return parseInt(localStorage.getItem('ll_gen_count') || '0'); }
 function incGenCount() { localStorage.setItem('ll_gen_count', getGenCount() + 1); updateGenCounter(); }
-function isPaidUser() { return currentProfile && (currentProfile.tier === 'pro' || currentProfile.tier === 'school'); }
+function isPaidUser() {
+  if (!currentProfile) return false;
+  // New model: paid = has at least one subject
+  if (currentProfile.subjects) {
+    try { return JSON.parse(currentProfile.subjects).length > 0; } catch(e) {}
+  }
+  // Legacy fallback
+  return currentProfile.tier === 'pro' || currentProfile.tier === 'school';
+}
+function getUserSubjects() {
+  if (!currentProfile || !currentProfile.subjects) return [];
+  try { return JSON.parse(currentProfile.subjects); } catch(e) { return []; }
+}
+function getUserAddons() {
+  if (!currentProfile || !currentProfile.addons) return [];
+  try { return JSON.parse(currentProfile.addons); } catch(e) { return []; }
+}
+function hasSubjectAccess(subjKey) {
+  // Admin / legacy pro/school gets all subjects
+  if (currentProfile && (currentProfile.tier === 'school' || currentProfile.is_admin)) return true;
+  return getUserSubjects().includes(subjKey);
+}
+function hasAddonAccess(addonKey) {
+  if (currentProfile && (currentProfile.tier === 'school' || currentProfile.is_admin)) return true;
+  return getUserAddons().includes(addonKey);
+}
 function updateGenCounter() {
   var el = document.getElementById('genCounterBadge');
   if (!el) return;
@@ -8446,6 +8500,10 @@ function printStudentTracker(idx) {
 const yearPlanData = {};
 
 function initYearPlanner() {
+  if (!hasAddonAccess('year_planner')) {
+    showAddonUpgradeModal('year_planner', 'Year Planner', '$12/mo');
+    return;
+  }
   const yearLevels = ['Foundation', 'Years 1-2', 'Years 3-4', 'Years 5-6'];
   const pills = document.getElementById('ypYearPills');
   pills.innerHTML = '';
@@ -8530,7 +8588,7 @@ function generateFromYearCell(subjKey, term) {
 }
 
 function generateAllYearPlans() {
-  if (!currentProfile || (currentProfile.tier !== 'pro' && currentProfile.tier !== 'school')) { showUpgradePrompt('Year Planner'); return; }
+  if (!hasAddonAccess('year_planner')) { showAddonUpgradeModal('year_planner', 'Year Planner', '$12/mo'); return; }
   const filledCells = Object.keys(yearPlanData).filter(k => yearPlanData[k] && yearPlanData[k].unitId);
   if (filledCells.length === 0) { showToast('No subjects planned yet.', 'error'); return; }
   const numWeeks = parseInt(document.getElementById('ypWeeksPerTerm').value) || 10;
@@ -8620,8 +8678,8 @@ const COMPOSITE_CLASSES = [
 ];
 
 function initCyclePlanner() {
-  if (!currentProfile || (currentProfile.tier !== 'pro' && currentProfile.tier !== 'school')) {
-    showUpgradePrompt('Cycle Planner');
+  if (!hasAddonAccess('cycle_planner')) {
+    showAddonUpgradeModal('cycle_planner', 'Cycle Planner', '$8/mo');
     return;
   }
   loadCyclePlanFromStorage();
@@ -8802,7 +8860,7 @@ function checkCycleCoverage() {
 }
 
 function generateAllCyclePlans() {
-  if (!currentProfile || (currentProfile.tier !== 'pro' && currentProfile.tier !== 'school')) { showUpgradePrompt('Cycle Planner'); return; }
+  if (!hasAddonAccess('cycle_planner')) { showAddonUpgradeModal('cycle_planner', 'Cycle Planner', '$8/mo'); return; }
   const filled = Object.keys(cyclePlanData[currentCycle]).filter(k => cyclePlanData[currentCycle][k] && cyclePlanData[currentCycle][k].unitId);
   if (!filled.length) { showToast('No units planned for Cycle ' + currentCycle + ' — click cells to set up units first.', 'error'); return; }
   const parts = filled[0].split('-');
@@ -8949,7 +9007,7 @@ document.getElementById('ypCellModal').onclick = (e) => {
 
 async function generateLessonSlideshow() {
   // Tier gate
-  if (!currentProfile || (currentProfile.tier !== 'pro' && currentProfile.tier !== 'school')) {
+  if (!isPaidUser()) {
     showUpgradePrompt('Slide Generator');
     return;
   }
@@ -10075,21 +10133,26 @@ async function handleForgotPassword(email) {
 // TIER GATING & SUBJECT ACCESS
 // ============================================================================
 
-/**
- * Check if user has access to a subject
- * All subjects require a paid subscription (pro or school tier)
- */
-function checkTierAccess(subject) {
-  // Not logged in - no access
-  if (!currentUser) return false;
-
-  // Must have pro or school tier
-  if (currentProfile && (currentProfile.tier === 'pro' || currentProfile.tier === 'school')) {
-    return true;
+// Map display names → API subject keys
+const SUBJ_NAME_TO_KEY = {};
+(function() {
+  if (typeof SUBJ_CFG !== 'undefined') {
+    Object.entries(SUBJ_CFG).forEach(([k, v]) => {
+      if (!SUBJ_NAME_TO_KEY[v.name]) SUBJ_NAME_TO_KEY[v.name] = k;
+    });
   }
+})();
 
-  // Free tier or no profile - no access to any subjects
-  return false;
+/**
+ * Check if user has access to a subject (by display name or API key)
+ */
+function checkTierAccess(subjectNameOrKey) {
+  if (!currentUser) return false;
+  // Admin/legacy school tier → full access
+  if (currentProfile && (currentProfile.tier === 'school' || currentProfile.is_admin)) return true;
+  // New model: check subjects array
+  const subjKey = SUBJ_NAME_TO_KEY[subjectNameOrKey] || subjectNameOrKey;
+  return hasSubjectAccess(subjKey);
 }
 
 /**
@@ -10138,7 +10201,9 @@ function updateSubjectLocking() {
           ev.stopImmediatePropagation();
           ev.stopPropagation();
           ev.preventDefault();
-          showUpgradePrompt(this.parentElement.querySelector('.subject-name') ? this.parentElement.querySelector('.subject-name').textContent.trim() : 'this subject')
+          const displayName = this.parentElement.querySelector('.subject-name') ? this.parentElement.querySelector('.subject-name').textContent.trim() : subject;
+          const subjKey = SUBJ_NAME_TO_KEY[displayName] || displayName;
+          showSubjectUpgradeModal(subjKey, displayName);
         });
       }
 
@@ -10147,7 +10212,8 @@ function updateSubjectLocking() {
       card.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
-        showUpgradePrompt(subject);
+        const subjKey = SUBJ_NAME_TO_KEY[subject] || subject;
+        showSubjectUpgradeModal(subjKey, subject);
         return false;
       };
     } else {
@@ -10172,14 +10238,16 @@ function updateSubjectLocking() {
 }
 
 /**
- * Show upgrade prompt modal
+ * Show upgrade prompt modal — if subject key given, show single-subject modal
  */
-function showUpgradePrompt(subject = null) {
+function showUpgradePrompt(subjectDisplayName = null) {
   if (!currentUser) { showAuthModal('signup'); return; }
-  if (subject === 'lesson generator' && !isPaidUser()) {
-    showToast('You\'ve used your ' + FREE_GEN_LIMIT + ' free lesson plans. Subscribe to keep going.', 'info');
+  if (subjectDisplayName && subjectDisplayName !== 'lesson generator' && subjectDisplayName !== 'Slide Generator' && subjectDisplayName !== 'School Template Upload') {
+    const subjKey = SUBJ_NAME_TO_KEY[subjectDisplayName] || subjectDisplayName;
+    showSubjectUpgradeModal(subjKey, subjectDisplayName);
+  } else {
+    showPricingModal();
   }
-  showPricingModal();
 }
 
 // ============================================================================
@@ -10290,27 +10358,21 @@ function autoSave(lessonData) {
 }
 
 // ============================================================================
-// UPGRADE & STRIPE (PLACEHOLDER)
+// UPGRADE & STRIPE
 // ============================================================================
 
-const STRIPE_KEY = ''; // To be filled in later
+let _pendingSubjectCheckout = null; // subject key queued for checkout
 
 /**
- * Handle upgrade to pro
+ * Open the full pricing/subject selection modal
  */
 function showPricingModal() {
+  if (!currentUser) { showAuthModal('signup'); return; }
   const modal = document.getElementById('pricingModal');
   if (!modal) return;
   modal.style.display = 'flex';
-  const tier = currentProfile ? currentProfile.tier : null;
-  const isPro = tier === 'pro' || tier === 'school';
-  const proBtn = document.getElementById('proUpgradeBtn');
-  const proLabel = document.getElementById('proCurrentLabel');
-  if (proBtn) {
-    proBtn.disabled = isPro;
-    proBtn.textContent = isPro ? 'Current plan' : 'Get Pro — $12/mo';
-  }
-  if (proLabel) proLabel.style.display = isPro ? 'block' : 'none';
+  renderSubjectPricingGrid();
+  renderAddonButtons();
 }
 
 function closePricingModal() {
@@ -10318,24 +10380,138 @@ function closePricingModal() {
   if (modal) modal.style.display = 'none';
 }
 
-async function startCheckout(tier) {
-  if (!currentUser) { showAuthModal('signin'); return; }
-  const btnId = 'proUpgradeBtn';
-  const defaultText = 'Get Pro — $12/mo';
-  const btn = document.getElementById(btnId);
+/** Render per-subject cards in the pricing modal */
+function renderSubjectPricingGrid() {
+  const grid = document.getElementById('subjectPricingGrid');
+  if (!grid || typeof SUBJ_CFG === 'undefined') return;
+  const mySubjects = getUserSubjects();
+  const isFirst = mySubjects.length === 0;
+  const entries = Object.entries(SUBJ_CFG).filter(([k]) => !k.includes(':'));
+  // Deduplicate (SUBJ_CFG may have duplicate keys)
+  const seen = new Set();
+  grid.innerHTML = '';
+  entries.forEach(([key, cfg]) => {
+    if (seen.has(key)) return; seen.add(key);
+    const owned = mySubjects.includes(key);
+    const price = owned ? '' : (isFirst && mySubjects.length === 0 ? '$12/mo' : '$5/mo');
+    const card = document.createElement('div');
+    card.style.cssText = `border:2px solid ${owned ? '#4CAF50' : '#e0e0e0'};border-radius:12px;padding:14px 10px;text-align:center;background:${owned ? '#f0fff4' : '#fff'};`;
+    card.innerHTML = `
+      <div style="font-size:1.6rem;margin-bottom:4px;">${cfg.icon || '📖'}</div>
+      <div style="font-weight:700;font-size:12px;color:#333;">${cfg.name}</div>
+      ${owned
+        ? '<div style="color:#4CAF50;font-size:12px;margin-top:6px;font-weight:600;">✓ Active</div>'
+        : `<div style="font-size:11px;color:#888;margin:4px 0 8px;">${isFirst ? '$12/mo' : '$5/mo'}</div><button class="pricing-btn pro-btn" onclick="showSubjectUpgradeModal('${key}','${cfg.name}')" style="padding:6px 8px;font-size:11px;width:100%;">Unlock</button>`
+      }
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/** Render addon buttons (disable if already owned) */
+function renderAddonButtons() {
+  const myAddons = getUserAddons();
+  ['year_planner', 'cycle_planner', 'full_units'].forEach(addon => {
+    const btn = document.getElementById('addonBtn_' + addon);
+    const card = document.getElementById('addonCard_' + addon);
+    if (!btn) return;
+    const owned = myAddons.includes(addon);
+    btn.disabled = owned;
+    btn.textContent = owned ? '✓ Active' : btn.getAttribute('data-default') || btn.textContent;
+    if (card) card.style.borderColor = owned ? '#4CAF50' : '#e0e0e0';
+    if (card) card.style.background = owned ? '#f0fff4' : '#fff';
+    if (!btn.getAttribute('data-default')) btn.setAttribute('data-default', btn.textContent);
+  });
+}
+
+/** Show single-subject upgrade prompt */
+function showSubjectUpgradeModal(subjKey, displayName) {
+  if (!currentUser) { showAuthModal('signup'); return; }
+  _pendingSubjectCheckout = subjKey;
+  const mySubjects = getUserSubjects();
+  const isFirst = mySubjects.length === 0;
+  const price = isFirst ? '$12' : '$5';
+  const priceNote = isFirst ? 'First subject · more subjects $5/mo each' : 'Additional subject · first subject $12/mo';
+  const cfg = (typeof SUBJ_CFG !== 'undefined') ? Object.entries(SUBJ_CFG).find(([k]) => k === subjKey) : null;
+  const icon = cfg ? cfg[1].icon : '📖';
+  document.getElementById('subjectUpgradeIcon').textContent = icon;
+  document.getElementById('subjectUpgradeTitle').textContent = `Unlock ${displayName}`;
+  document.getElementById('subjectUpgradeDesc').textContent = `Full lesson generation, saving, and planning for ${displayName}.`;
+  document.getElementById('subjectUpgradePrice').innerHTML = `${price}<span style="font-size:1rem;font-weight:500;color:#888;">/mo</span>`;
+  document.getElementById('subjectUpgradePriceNote').textContent = priceNote;
+  const btn = document.getElementById('subjectUpgradeBtn');
+  if (btn) { btn.textContent = `Get ${displayName} — ${price}/mo`; btn.disabled = false; }
+  document.getElementById('subjectUpgradeModal').style.display = 'flex';
+}
+
+/** Show addon upgrade modal (reuse subject modal with different copy) */
+function showAddonUpgradeModal(addonKey, displayName, price) {
+  if (!currentUser) { showAuthModal('signup'); return; }
+  _pendingSubjectCheckout = null;
+  // Repurpose the subject upgrade modal for addons
+  document.getElementById('subjectUpgradeIcon').textContent = addonKey === 'year_planner' ? '📅' : addonKey === 'cycle_planner' ? '🔄' : '📚';
+  document.getElementById('subjectUpgradeTitle').textContent = `Unlock ${displayName}`;
+  document.getElementById('subjectUpgradeDesc').textContent = `Add ${displayName} to your LessonLab subscription.`;
+  document.getElementById('subjectUpgradePrice').innerHTML = price.replace('/mo', '<span style="font-size:1rem;font-weight:500;color:#888;">/mo</span>').replace(' one-time', '<span style="font-size:0.8rem;font-weight:400;color:#888;"> one-time</span>');
+  document.getElementById('subjectUpgradePriceNote').textContent = '';
+  const btn = document.getElementById('subjectUpgradeBtn');
+  if (btn) {
+    btn.textContent = `Add ${displayName} — ${price}`;
+    btn.disabled = false;
+    btn.onclick = async () => {
+      btn.disabled = true; btn.textContent = 'Loading...';
+      try {
+        const data = await api('/stripe/checkout', { method: 'POST', body: JSON.stringify({ type: 'addon', addon: addonKey }) });
+        if (data.url) window.location.href = data.url;
+        else { showToast(data.error || 'Checkout failed', 'error'); btn.disabled = false; btn.textContent = `Add ${displayName} — ${price}`; }
+      } catch(e) { showToast('Network error', 'error'); btn.disabled = false; btn.textContent = `Add ${displayName} — ${price}`; }
+    };
+  }
+  document.getElementById('subjectUpgradeModal').style.display = 'flex';
+}
+
+/** Called by subjectUpgradeModal confirm button */
+async function confirmSubjectCheckout() {
+  if (!_pendingSubjectCheckout) return;
+  const subjKey = _pendingSubjectCheckout;
+  const btn = document.getElementById('subjectUpgradeBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
   try {
-    const data = await api('/stripe/checkout', { method: 'POST', body: JSON.stringify({ tier }) });
+    const data = await api('/stripe/checkout', { method: 'POST', body: JSON.stringify({ type: 'subject', subject: subjKey }) });
     if (data.url) {
       window.location.href = data.url;
     } else {
       showToast(data.error || 'Checkout failed. Please try again.', 'error');
-      if (btn) { btn.disabled = false; btn.textContent = defaultText; }
+      if (btn) { btn.disabled = false; }
     }
   } catch(e) {
     showToast('Network error. Please try again.', 'error');
-    if (btn) { btn.disabled = false; btn.textContent = defaultText; }
+    if (btn) { btn.disabled = false; }
   }
+}
+
+/** Addon checkout from pricing modal */
+async function startAddonCheckout(addonKey) {
+  if (!currentUser) { showAuthModal('signin'); return; }
+  const btn = document.getElementById('addonBtn_' + addonKey);
+  const origText = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
+  try {
+    const data = await api('/stripe/checkout', { method: 'POST', body: JSON.stringify({ type: 'addon', addon: addonKey }) });
+    if (data.url) { window.location.href = data.url; }
+    else {
+      showToast(data.error || 'Checkout failed', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = origText; }
+    }
+  } catch(e) {
+    showToast('Network error', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = origText; }
+  }
+}
+
+// Legacy: startCheckout('pro') from landing page links
+async function startCheckout(tier) {
+  showPricingModal();
 }
 
 async function openBillingPortal() {
@@ -10734,25 +10910,24 @@ function openAccountSettings() {
   var emailEl = document.getElementById('acctEmailDisplay');
   if (emailEl) emailEl.textContent = (currentUser && currentUser.email) || '';
 
-  var tier = (currentProfile && currentProfile.tier) || 'free';
   var badgeEl = document.getElementById('acctTierBadge');
+  var mySubjects = getUserSubjects();
+  var myAddons = getUserAddons();
   if (badgeEl) {
-    var TIER_STYLES = {
-      free:   { label: 'Free',   bg: '#fef3c7', color: '#92400e' },
-      pro:    { label: 'Pro',    bg: '#ede9fe', color: '#7c3aed' },
-      school: { label: 'Pro',    bg: '#ede9fe', color: '#7c3aed' },
-    };
-    var ts = TIER_STYLES[tier] || TIER_STYLES.free;
-    badgeEl.textContent = ts.label;
-    badgeEl.style.background = ts.bg;
-    badgeEl.style.color = ts.color;
+    if (mySubjects.length > 0) {
+      badgeEl.textContent = mySubjects.length + ' subject' + (mySubjects.length > 1 ? 's' : '') + ' active';
+      badgeEl.style.background = '#ede9fe'; badgeEl.style.color = '#7c3aed';
+    } else {
+      badgeEl.textContent = 'No subjects — add one to get started';
+      badgeEl.style.background = '#fef3c7'; badgeEl.style.color = '#92400e';
+    }
   }
 
   var ctaEl = document.getElementById('acctUpgradeCta');
-  if (ctaEl) ctaEl.style.display = (tier === 'free') ? 'block' : 'none';
+  if (ctaEl) ctaEl.style.display = mySubjects.length === 0 ? 'block' : 'none';
 
   var manageSubEl = document.getElementById('acctManageSubscription');
-  if (manageSubEl) manageSubEl.style.display = (tier !== 'free' && currentProfile && currentProfile.stripe_customer_id) ? 'block' : 'none';
+  if (manageSubEl) manageSubEl.style.display = (currentProfile && currentProfile.stripe_customer_id) ? 'block' : 'none';
 
   modal.style.display = 'flex';
 }
@@ -10805,23 +10980,30 @@ async function saveAccountSettings() {
   const params = new URLSearchParams(location.search);
   const upgradeStatus = params.get('upgrade');
   if (upgradeStatus === 'success') {
-    const tier = params.get('tier') || 'pro';
+    const type = params.get('type') || 'subject';
     history.replaceState({}, document.title, location.pathname);
     setTimeout(function() {
-      showToast('Payment successful! Your plan is being activated...', 'success');
+      showToast('Payment successful! Activating your access...', 'success');
     }, 800);
-    // Refresh auth state to pick up new tier (webhook fires before redirect)
+    // Re-fetch profile to pick up webhook-updated subjects/addons
     setTimeout(async function() {
       await initAuth();
-      const t = currentProfile && currentProfile.tier;
-      if (t && t !== 'free') {
-        showToast('You are now on the ' + t.charAt(0).toUpperCase() + t.slice(1) + ' plan!', 'success');
+      const subjects = getUserSubjects();
+      const addons = getUserAddons();
+      if (type === 'addon') {
+        showToast('Add-on activated! Enjoy your new features.', 'success');
+      } else if (subjects.length > 0) {
+        const subjKey = subjects[subjects.length - 1];
+        const cfg = (typeof SUBJ_CFG !== 'undefined' && SUBJ_CFG[subjKey]) ? SUBJ_CFG[subjKey] : null;
+        const name = cfg ? cfg.name : subjKey;
+        showToast('✅ ' + name + ' is now unlocked! Happy teaching.', 'success');
+        updateSubjectLocking();
       }
-    }, 3000);
+    }, 3500);
   } else if (upgradeStatus === 'cancelled') {
     history.replaceState({}, document.title, location.pathname);
     setTimeout(function() {
-      showToast('Upgrade cancelled — you can upgrade anytime from your account.', 'info');
+      showToast('Payment cancelled — you can upgrade anytime.', 'info');
     }, 800);
   }
   // Close pricing modal on overlay click
