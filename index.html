@@ -10604,7 +10604,7 @@ function renderPricingIntervalToggle() {
         Annual <span style="background:#22c55e;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px;">Save 31%</span>
       </button>
     </div>
-    ${isAnnual ? '<p style="text-align:center;font-size:12px;color:#166534;background:#f0fdf4;border-radius:8px;padding:8px 16px;margin-bottom:12px;">🎉 Annual plan — <strong>unlimited</strong> lesson saves + all features</p>' : '<p style="text-align:center;font-size:12px;color:#666;margin-bottom:12px;">Monthly plan includes 20 lesson saves/month</p>'}
+    ${isAnnual ? '<p style="text-align:center;font-size:12px;color:#166534;background:#f0fdf4;border-radius:8px;padding:8px 16px;margin-bottom:12px;">🎉 Annual plan — <strong>unlimited</strong> saves + <strong>Full Units included free</strong></p>' : '<p style="text-align:center;font-size:12px;color:#666;margin-bottom:12px;">Monthly plan · 20 lesson saves/month · Full Units $8 one-time add-on</p>'}
   `;
 }
 
@@ -10612,6 +10612,7 @@ function setPricingInterval(interval) {
   _pricingInterval = interval;
   renderPricingIntervalToggle();
   renderSubjectPricingGrid();
+  renderAddonButtons();
 }
 
 function closePricingModal() {
@@ -10655,16 +10656,34 @@ function renderSubjectPricingGrid() {
 /** Render addon buttons (disable if already owned) */
 function renderAddonButtons() {
   const myAddons = getUserAddons();
+  const annual = currentProfile && currentProfile.plan_interval === 'year';
   ['year_planner', 'cycle_planner', 'full_units', 'school_branding'].forEach(addon => {
     const btn = document.getElementById('addonBtn_' + addon);
     const card = document.getElementById('addonCard_' + addon);
     if (!btn) return;
     const owned = myAddons.includes(addon);
-    btn.disabled = owned;
-    btn.textContent = owned ? '✓ Active' : btn.getAttribute('data-default') || btn.textContent;
-    if (card) card.style.borderColor = owned ? '#4CAF50' : '#e0e0e0';
-    if (card) card.style.background = owned ? '#f0fff4' : '#fff';
+    // Full Units is included with annual — show as "Included with Annual" not "✓ Active"
+    const includedWithAnnual = addon === 'full_units' && annual && !owned;
     if (!btn.getAttribute('data-default')) btn.setAttribute('data-default', btn.textContent);
+    if (owned) {
+      btn.disabled = true;
+      btn.textContent = '✓ Active';
+      btn.style.background = '#22c55e'; btn.style.color = '#fff';
+    } else if (includedWithAnnual) {
+      btn.disabled = true;
+      btn.textContent = '✓ Included';
+      btn.style.background = '#22c55e'; btn.style.color = '#fff';
+    } else if (_pricingInterval === 'year' && addon === 'full_units') {
+      btn.disabled = true;
+      btn.textContent = '✓ Included with Annual';
+      btn.style.background = '#22c55e'; btn.style.color = '#fff';
+    } else {
+      btn.disabled = false;
+      btn.textContent = btn.getAttribute('data-default');
+      btn.style.background = ''; btn.style.color = '';
+    }
+    if (card) card.style.borderColor = (owned || includedWithAnnual || (_pricingInterval === 'year' && addon === 'full_units')) ? '#4CAF50' : '#e0e0e0';
+    if (card) card.style.background = (owned || includedWithAnnual || (_pricingInterval === 'year' && addon === 'full_units')) ? '#f0fff4' : '#fff';
   });
 }
 
