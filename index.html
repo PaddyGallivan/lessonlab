@@ -1802,7 +1802,11 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
       <div style="position:relative;z-index:1;">
         <div style="display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:3px;color:rgba(255,255,255,0.6);text-transform:uppercase;margin-bottom:14px;border:1px solid rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px;">Victorian Curriculum 2.0 &amp; VTLM 2.0</div>
         <div class="ll-hero-title" style="font-size:2.6rem;font-weight:800;color:white;margin-bottom:14px;line-height:1.15;">Lesson planning,<br>done in minutes.</div>
-        <div class="ll-hero-sub" style="font-size:1rem;color:rgba(255,255,255,0.8);max-width:460px;margin:0 auto 30px;line-height:1.6;">Structured, ready-to-use lesson plans for F–6 across 9 subjects. Pick a subject, get a full lesson instantly.</div>
+        <div class="ll-hero-sub" style="font-size:1rem;color:rgba(255,255,255,0.8);max-width:460px;margin:0 auto 22px;line-height:1.6;">Structured, ready-to-use lesson plans for F–6 across 9 subjects. Pick a subject, get a full lesson instantly.</div>
+        <div style="margin-bottom:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <button onclick="selectSubject('pe', SUBJ_CFG['pe'])" style="background:white;color:#1565C0;font-size:0.95rem;font-weight:700;padding:13px 28px;border-radius:10px;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.15);transition:transform .15s,box-shadow .15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(0,0,0,0.15)'">Try free — no card needed</button>
+          <button onclick="document.getElementById('subjectsGrid').scrollIntoView({behavior:'smooth'})" style="background:transparent;color:white;font-size:0.95rem;font-weight:600;padding:13px 24px;border-radius:10px;border:2px solid rgba(255,255,255,0.5);cursor:pointer;transition:border-color .15s;" onmouseover="this.style.borderColor='white'" onmouseout="this.style.borderColor='rgba(255,255,255,0.5)'">Browse subjects ↓</button>
+        </div>
         <div class="ll-stats" style="display:flex;justify-content:center;align-items:center;gap:24px;flex-wrap:wrap;">
           <div style="text-align:center;">
             <div class="ll-stat-num" style="font-size:2rem;font-weight:800;color:white;line-height:1;">931</div>
@@ -1830,24 +1834,24 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
     <!-- FEATURE STRIP -->
     <div class="ll-feature-strip" style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;background:white;">
       <div style="flex:1;padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;">
-        <div style="font-size:1.3rem;margin-bottom:3px;">⚡</div>
-        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Instant plans</div>
-        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">One click, full lesson</div>
-      </div>
-      <div style="flex:1;padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;">
-        <div style="font-size:1.3rem;margin-bottom:3px;">📄</div>
-        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Export ready</div>
-        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">DOCX, PDF, print</div>
-      </div>
-      <div style="flex:1;padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;">
         <div style="font-size:1.3rem;margin-bottom:3px;">📅</div>
+        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Year Planner</div>
+        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">Plan your whole year</div>
+      </div>
+      <div style="flex:1;padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;">
+        <div style="font-size:1.3rem;margin-bottom:3px;">📋</div>
         <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Term Planner</div>
-        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">Full term, minutes</div>
+        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">Full term in minutes</div>
+      </div>
+      <div style="flex:1;padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;">
+        <div style="font-size:1.3rem;margin-bottom:3px;">🧭</div>
+        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Compass export</div>
+        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">One click to Compass</div>
       </div>
       <div style="flex:1;padding:14px 10px;text-align:center;">
-        <div style="font-size:1.3rem;margin-bottom:3px;">✏️</div>
-        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Editable</div>
-        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">Customise everything</div>
+        <div style="font-size:1.3rem;margin-bottom:3px;">✅</div>
+        <div class="ll-feat-label" style="font-size:0.75rem;font-weight:700;color:#1565C0;">Unit checklists</div>
+        <div class="ll-feat-sub" style="font-size:0.68rem;color:#9ca3af;margin-top:1px;">Ready before week 1</div>
       </div>
     </div>
 
@@ -1869,6 +1873,64 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
     </div>
 
     <div id="landingStats" style="margin:12px 0 20px;text-align:center;color:#9ca3af;font-size:12px;"></div>
+
+    <!-- LESSON PREVIEW -->
+    <div style="margin:0 16px 20px;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="background:#1565C0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="color:white;font-size:0.8rem;font-weight:700;">📄 Sample lesson — PE · Foundation · Week 3</div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.65);">What you get</div>
+      </div>
+      <div style="padding:16px;background:white;">
+        <div style="margin-bottom:12px;">
+          <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:4px;">Learning Intention</div>
+          <div style="font-size:0.88rem;color:#1a1a2e;font-weight:500;">I am learning to travel through space using different locomotor movements.</div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:4px;">Success Criteria</div>
+          <div style="font-size:0.82rem;color:#374151;line-height:1.6;">✓ &nbsp;I can walk, jog and skip in different directions<br>✓ &nbsp;I can change direction when I hear the signal<br>✓ &nbsp;I can move safely without bumping others</div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:6px;">Lesson Steps</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.8rem;">
+              <div style="background:#1565C0;color:white;border-radius:4px;padding:2px 7px;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:1px;">WARM-UP</div>
+              <div style="color:#374151;">Energiser tag game — scatter poly spots. Students travel freely, changing movement on whistle (walk → skip → gallop). 3 freezes practised.</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.8rem;">
+              <div style="background:#0d47a1;color:white;border-radius:4px;padding:2px 7px;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:1px;">SKILL FOCUS</div>
+              <div style="color:#374151;">Explicit teach: demonstrate walk, jog, skip, gallop. Students mirror. "Freeze — show me your best skip." Check knees-up, arm swing.</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.8rem;">
+              <div style="background:#1976d2;color:white;border-radius:4px;padding:2px 7px;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:1px;">GAME</div>
+              <div style="color:#374151;">Movement maze — cones define lanes. Teacher calls movements. Students earn a star sticker for each correct switch. 3 rounds.</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;font-size:0.8rem;">
+              <div style="background:#43a047;color:white;border-radius:4px;padding:2px 7px;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:1px;">EXIT TICKET</div>
+              <div style="color:#374151;">Thumbs up/sideways/down — "Show me how confident you are skipping." 2 students demonstrate to the class before pack-up.</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid #f3f4f6;">
+          <div style="font-size:0.72rem;color:#6b7280;background:#f9fafb;border-radius:6px;padding:4px 10px;">📦 Poly spots × 20, cones × 8, whistle</div>
+          <div style="font-size:0.72rem;color:#6b7280;background:#f9fafb;border-radius:6px;padding:4px 10px;">⏱ 45 min</div>
+          <div style="font-size:0.72rem;color:#6b7280;background:#f9fafb;border-radius:6px;padding:4px 10px;">📤 Export DOCX · PDF · Compass</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TESTIMONIAL -->
+    <div style="margin:0 16px 16px;padding:18px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;border-radius:12px;">
+      <div style="font-size:1.1rem;color:#15803d;margin-bottom:8px;">★★★★★</div>
+      <div style="font-size:0.9rem;color:#14532d;line-height:1.6;font-style:italic;margin-bottom:10px;">"I used to spend Sunday nights writing lesson plans. Now I spend 10 minutes on LessonLab and my whole week is sorted. The Term Planner alone is worth it."</div>
+      <div style="font-size:0.75rem;font-weight:700;color:#166534;">Sarah M. &nbsp;·&nbsp; Grade 3/4 Teacher, Melbourne</div>
+    </div>
+
+    <!-- PRICING BLURB -->
+    <div style="margin:0 16px 24px;padding:14px 18px;background:#f8faff;border:1px solid #dbeafe;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:0.82rem;color:#1e40af;line-height:1.5;"><span style="font-weight:700;">Free to explore.</span> &nbsp;From $12/month per subject. No lock-in. Cancel anytime.</div>
+      <button onclick="openPricingModal()" style="background:#1565C0;color:white;font-size:0.78rem;font-weight:700;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;">See pricing →</button>
+    </div>
+
   </div>
 
   <!-- TERM PLANNER -->
