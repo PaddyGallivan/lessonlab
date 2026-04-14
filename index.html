@@ -6035,6 +6035,7 @@ function generateAll() {
       school: state.school,
       state: state.state,
       subject: state.subjectCfg.name,
+      subjectKey: state.subject,
       year: state.yearLevel,
       term: state.term,
       week: curWeek,
@@ -6139,6 +6140,7 @@ function displayResults() {
               <button class="btn btn-sec" onclick="previewLesson(${lesson.globalIdx})">Preview</button>
               <button class="btn btn-sec" onclick="editLesson(${lesson.globalIdx})">Edit</button>
               <button class="btn btn-sec" onclick="downloadOne(${lesson.globalIdx})">Download</button>
+              <button class="btn btn-sec" onclick="saveLessonToCloud(${lesson.globalIdx}, this)" style="font-size:11px;">💾 Save</button>
               <button class="btn btn-sec" onclick="openTimer(${lesson.globalIdx})" style="font-size:11px;">Timer</button>
               <button class="btn btn-sec" onclick="printStudentTracker(${lesson.globalIdx})" style="font-size:11px;">Tracker</button>
               <button class="btn btn-sec" onclick="generateRubric(${lesson.globalIdx})" style="font-size:11px;">Rubric</button>
@@ -6229,6 +6231,7 @@ function displayResults() {
           <button class="btn btn-sec" onclick="previewLesson(${idx})">Preview</button>
           <button class="btn btn-sec" onclick="editLesson(${idx})">Edit</button>
           <button class="btn btn-sec" onclick="downloadOne(${idx})">Download</button>
+          <button class="btn btn-sec" onclick="saveLessonToCloud(${idx}, this)" style="font-size:11px;">💾 Save</button>
           <button class="btn btn-sec" onclick="openTimer(${idx})" style="font-size:11px;">Timer</button>
           <button class="btn btn-sec" onclick="printStudentTracker(${idx})" style="font-size:11px;">Tracker</button>
           <button class="btn btn-sec" onclick="generateRubric(${idx})" style="font-size:11px;">Rubric</button>
@@ -7980,6 +7983,7 @@ function generateTermPlans() {
       school: state.school,
       state: state.state,
       subject: subjectCfg.name,
+      subjectKey: subject,
       year: yearLevel,
       term: state.term,
       week: week,
@@ -9613,9 +9617,12 @@ document.getElementById('applyParsedLessonBtn').addEventListener('click', () => 
       var item = bulkParsedLessons[j];
       var p    = item.parsed;
       var fn   = item.fileName;
+      // Map parsed subject name to API key (e.g. "Literacy" → "literacy")
+      var rawSubj = p.subject || '';
+      var mappedSubj = SUBJ_NAME_TO_KEY[rawSubj] || rawSubj.toLowerCase().replace(/\s+/g, '_') || '';
       var row = {
         title:              p.title              || fn,
-        subject:            p.subject            || '',
+        subject:            mappedSubj,
         year_level:         p.year               || '',
         learning_intention: p.learningIntention  || '',
         success_criteria:   p.successCriteria    ? p.successCriteria.split(/[\n;]/).map(function(s){return s.trim();}).filter(Boolean) : [],
@@ -10259,6 +10266,37 @@ let autoSaveTimeout = null;
 /**
  * Save a lesson to the Worker API
  */
+// Save a specific generated lesson (by index) to the cloud API
+async function saveLessonToCloud(idx, btn) {
+  if (!currentUser) { showToast('Please sign in to save lessons', 'error'); return; }
+  const lesson = state.lessons[idx];
+  if (!lesson) return;
+  const d = lesson.data;
+  // Use subjectKey (API key like "literacy") — fall back to SUBJ_NAME_TO_KEY lookup
+  const subjKey = d.subjectKey || SUBJ_NAME_TO_KEY[d.subject] || d.subject;
+  const row = {
+    title: lesson.title || d.title || 'Untitled Lesson',
+    subject: subjKey,
+    year_level: d.year || '',
+    term: d.term || '',
+    week: String(lesson.week || ''),
+    learning_intention: lesson.li || d.li || '',
+    success_criteria: d.sc || [],
+    equipment: d.equipment || '',
+    lesson_data: d
+  };
+  if (btn) { btn.textContent = '💾 Saving…'; btn.disabled = true; }
+  const result = await api('/lessons', { method: 'POST', body: JSON.stringify(row) });
+  if (result.error) {
+    showToast('Save failed: ' + result.error, 'error');
+    if (btn) { btn.textContent = '💾 Save'; btn.disabled = false; }
+  } else {
+    showToast('Lesson saved to library ✓', 'success');
+    lesson.savedId = result.id;
+    if (btn) { btn.textContent = '✓ Saved'; btn.style.background = '#22c55e'; btn.style.color = '#fff'; }
+  }
+}
+
 async function saveLesson(lessonData) {
   if (!currentUser) {
     showToast('Please sign in to save lessons', 'error');
