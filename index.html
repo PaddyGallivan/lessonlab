@@ -2202,15 +2202,23 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 13px;font-size:12px;color:#166534;font-weight:600;">📤 Upload &amp; convert your existing lessons</div>
       </div>
       <!-- Optional upgrade -->
-      <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#888;margin-bottom:10px;">Optional upgrade</div>
-      <div style="display:grid;grid-template-columns:1fr;gap:10px;max-width:280px;">
-        <div id="addonCard_full_units" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;display:flex;align-items:center;gap:14px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#888;margin-bottom:10px;">Optional upgrades</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div id="addonCard_full_units" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;">
           <div style="font-size:1.5rem;">📚</div>
           <div style="flex:1;">
             <div style="font-weight:700;font-size:13px;">Full Units</div>
-            <div style="font-size:11px;color:#888;margin-top:2px;">Get the complete full-length version of every unit for your subject — all weeks, deep content.</div>
+            <div style="font-size:11px;color:#888;margin-top:2px;">Complete full-length units — all weeks, deep content for your subject.</div>
           </div>
           <button id="addonBtn_full_units" class="pricing-btn pro-btn" onclick="startAddonCheckout('full_units')" style="padding:7px 12px;font-size:12px;white-space:nowrap;">$8 one-time</button>
+        </div>
+        <div id="addonCard_school_branding" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.5rem;">🏫</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:13px;">School Branding</div>
+            <div style="font-size:11px;color:#888;margin-top:2px;">Your school name on every export. Removes LessonLab watermark.</div>
+          </div>
+          <button id="addonBtn_school_branding" class="pricing-btn pro-btn" onclick="startAddonCheckout('school_branding')" style="padding:7px 12px;font-size:12px;white-space:nowrap;">$5/mo</button>
         </div>
       </div>
     </div>
@@ -6415,6 +6423,52 @@ function _docxBuildPhasesTable(phases, times, d) {
   '</w:tbl>';
 }
 
+function _docxGetBrandingOpts() {
+  const paid = isPaidUser();
+  const hasBranding = hasAddonAccess('school_branding');
+  const schoolName = (currentProfile && currentProfile.school_name) || '';
+  return {
+    watermark: !paid,            // free users get LessonLab footer
+    schoolHeader: hasBranding && schoolName,  // branding addon + school name = custom header
+    schoolName: schoolName
+  };
+}
+
+function _docxBuildFooterXml(text) {
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+      '<w:p>' +
+        '<w:pPr><w:jc w:val="center"/></w:pPr>' +
+        '<w:r><w:rPr><w:color w:val="BBBBBB"/><w:sz w:val="16"/></w:rPr>' +
+        '<w:t>' + _xesc(text) + '</w:t></w:r>' +
+      '</w:p>' +
+    '</w:ftr>';
+}
+
+function _docxBuildHeaderXml(schoolName) {
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+      '<w:p>' +
+        '<w:pPr><w:jc w:val="right"/>' +
+          '<w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>' +
+        '</w:pPr>' +
+        '<w:r><w:rPr><w:b/><w:color w:val="1a1a2e"/><w:sz w:val="18"/></w:rPr>' +
+          '<w:t>' + _xesc(schoolName) + '</w:t></w:r>' +
+      '</w:p>' +
+    '</w:hdr>';
+}
+
+function _docxSectPrWithBranding(opts) {
+  let refs = '';
+  if (opts.schoolHeader) refs += '<w:headerReference w:type="default" r:id="rIdH1"/>';
+  if (opts.watermark) refs += '<w:footerReference w:type="default" r:id="rIdF1"/>';
+  return '<w:sectPr>' +
+    refs +
+    '<w:pgSz w:w="12240" w:h="15840"/>' +
+    '<w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080" w:header="720" w:footer="720" w:gutter="0"/>' +
+  '</w:sectPr>';
+}
+
 function _docxBuildDocument(lessons, cfg) {
   var phases = cfg.phases || ['Phase 1','Phase 2','Phase 3','Phase 4','Phase 5'];
   var times = cfg.times || ['5 min','10 min','15 min','15 min','5 min'];
@@ -6544,15 +6598,13 @@ function _docxBuildDocument(lessons, cfg) {
     }
   });
 
+  var bOpts = _docxGetBrandingOpts();
   return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
     '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"' +
     ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
     '<w:body>' +
       parts.join('') +
-      '<w:sectPr>' +
-        '<w:pgSz w:w="12240" w:h="15840"/>' +
-        '<w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080" w:header="720" w:footer="720" w:gutter="0"/>' +
-      '</w:sectPr>' +
+      _docxSectPrWithBranding(bOpts) +
     '</w:body></w:document>';
 }
 
@@ -6757,12 +6809,23 @@ async function exportToWord() {
       '</Relationships>'
     );
 
+    var bOpts = _docxGetBrandingOpts();
+    var extraRels = '';
+    if (bOpts.schoolHeader) {
+      zip.file('word/header1.xml', _docxBuildHeaderXml(bOpts.schoolName));
+      extraRels += '<Relationship Id="rIdH1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/>';
+    }
+    if (bOpts.watermark) {
+      zip.file('word/footer1.xml', _docxBuildFooterXml('Generated by LessonLab \u00b7 lessonlab.com.au'));
+      extraRels += '<Relationship Id="rIdF1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>';
+    }
     zip.file('word/_rels/document.xml.rels',
       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
       '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
         '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
         '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' +
         '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>' +
+        extraRels +
       '</Relationships>'
     );
 
@@ -10592,7 +10655,7 @@ function renderSubjectPricingGrid() {
 /** Render addon buttons (disable if already owned) */
 function renderAddonButtons() {
   const myAddons = getUserAddons();
-  ['year_planner', 'cycle_planner', 'full_units'].forEach(addon => {
+  ['year_planner', 'cycle_planner', 'full_units', 'school_branding'].forEach(addon => {
     const btn = document.getElementById('addonBtn_' + addon);
     const card = document.getElementById('addonCard_' + addon);
     if (!btn) return;
@@ -11086,6 +11149,16 @@ function openAccountSettings() {
   document.getElementById('acctNewPassword').value = '';
   document.getElementById('acctConfirmPassword').value = '';
   document.getElementById('acctMessage').style.display = 'none';
+  // Show school branding section if addon is active
+  var brandingSection = document.getElementById('acctBrandingSection');
+  if (brandingSection) {
+    var hasBranding = hasAddonAccess('school_branding');
+    brandingSection.style.display = hasBranding ? 'block' : 'none';
+    if (hasBranding) {
+      var logoEl = document.getElementById('acctSchoolLogo');
+      if (logoEl) logoEl.value = (currentProfile && currentProfile.school_logo) || '';
+    }
+  }
 
   // Populate email + tier badge
   var emailEl = document.getElementById('acctEmailDisplay');
@@ -11127,12 +11200,19 @@ async function saveAccountSettings() {
     return;
   }
   try {
-    if (displayName && currentUser) {
-      const profileRes = await api('/profile', {
-        method: 'PUT',
-        body: JSON.stringify({ display_name: displayName })
-      });
-      if (!profileRes.error && currentProfile) currentProfile.display_name = displayName;
+    var profileUpdates = {};
+    if (displayName) profileUpdates.display_name = displayName;
+    if (schoolName) profileUpdates.school_name = schoolName;
+    // Save school logo if branding addon is active
+    var logoInput = document.getElementById('acctSchoolLogo');
+    if (logoInput && hasAddonAccess('school_branding')) {
+      profileUpdates.school_logo = logoInput.value.trim() || null;
+    }
+    if (Object.keys(profileUpdates).length && currentUser) {
+      const profileRes = await api('/profile', { method: 'PUT', body: JSON.stringify(profileUpdates) });
+      if (!profileRes.error && currentProfile) {
+        Object.assign(currentProfile, profileUpdates);
+      }
     }
     if (state && schoolName !== state.school) {
       state.school = schoolName;
@@ -11335,6 +11415,14 @@ async function submitResetPassword(token) {
     <div style="margin-bottom:1.25rem;">
       <label style="display:block;font-size:0.875rem;font-weight:500;color:#374151;margin-bottom:0.375rem;">School Name</label>
       <input id="acctSchoolName" type="text" style="width:100%;padding:0.5rem 0.75rem;border:1px solid #d1d5db;border-radius:0.375rem;font-size:0.875rem;box-sizing:border-box;" placeholder="Your school"/>
+    </div>
+
+    <!-- School Branding section — only shown when addon is active -->
+    <div id="acctBrandingSection" style="display:none;margin-bottom:1.25rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;">
+      <label style="display:block;font-size:0.875rem;font-weight:600;color:#166534;margin-bottom:4px;">🏫 School Branding Active</label>
+      <div style="font-size:0.78rem;color:#374151;margin-bottom:0.625rem;">Your school name appears on all exported documents. School logo URL (optional — appears in doc header):</div>
+      <input id="acctSchoolLogo" type="url" style="width:100%;padding:0.5rem 0.75rem;border:1px solid #86efac;border-radius:0.375rem;font-size:0.875rem;box-sizing:border-box;" placeholder="https://yourschool.edu.au/logo.png"/>
+      <div style="font-size:0.72rem;color:#6b7280;margin-top:4px;">PNG or JPG. Hosted publicly (Google Drive, school website, etc.)</div>
     </div>
 
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:1.25rem 0;"/>
