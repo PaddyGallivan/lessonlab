@@ -6765,11 +6765,12 @@ function _docxBuildTemplateDocument(lessons, cfg, tmpl) {
     );
   });
 
+  var bOpts = _docxGetBrandingOpts();
   return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
     '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"' +
     ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
     '<w:body>' + parts.join('') +
-    '<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>' +
+    _docxSectPrWithBranding(bOpts) +
     '</w:body></w:document>';
 }
 
@@ -10044,12 +10045,14 @@ function updateUsageBadge() {
   if (!el) return;
   if (!isPaidUser()) { el.style.display = 'none'; return; }
   el.style.display = 'inline';
-  if (monthlyUsage.is_annual) {
+  if (monthlyUsage.is_annual || currentProfile?.plan_interval === 'year') {
     el.textContent = '∞ saves';
     el.style.color = '#166534';
   } else {
-    const remaining = monthlyUsage.remaining ?? (monthlyUsage.limit - monthlyUsage.count);
-    el.textContent = `${monthlyUsage.count}/${monthlyUsage.limit} saves`;
+    const count = monthlyUsage.count || 0;
+    const limit = monthlyUsage.limit || 20;
+    const remaining = monthlyUsage.remaining != null ? monthlyUsage.remaining : (limit - count);
+    el.textContent = `${count}/${limit} saves`;
     el.style.color = remaining <= 3 ? '#dc2626' : '#888';
   }
 }
@@ -10492,6 +10495,11 @@ async function saveLesson(lessonData) {
         method: 'POST',
         body: JSON.stringify(lessonData)
       });
+      if (data.error === 'monthly_limit_reached') {
+        showToast('Monthly save limit reached — upgrade to annual for unlimited saves', 'error');
+        openPricingModal(true);
+        return false;
+      }
       if (data.error) {
         console.error('Insert lesson error:', data.error);
         showToast('Error saving lesson', 'error');
@@ -10499,6 +10507,9 @@ async function saveLesson(lessonData) {
       }
       if (data.id) {
         lessonData.lessonId = data.id;
+        monthlyUsage.count = (monthlyUsage.count || 0) + 1;
+        if (monthlyUsage.remaining != null) monthlyUsage.remaining = Math.max(0, monthlyUsage.remaining - 1);
+        updateUsageBadge();
       }
     }
 
