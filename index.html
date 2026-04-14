@@ -1323,6 +1323,8 @@
         <span id="userDisplayName"></span>
         <span style="margin-left: 0.25rem;">▼</span>
       </button>
+      <!-- Monthly usage counter (shown when signed in and paid) -->
+      <span id="monthlyUsageBadge" style="font-size:10px;color:#555;white-space:nowrap;display:none;"></span>
 
       <!-- Dropdown Content -->
       <div id="userDropdown" style="
@@ -2175,6 +2177,9 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
     <h2 style="text-align:center;font-size:1.6rem;font-weight:800;color:#1a1a2e;">Choose Your Subjects</h2>
     <p class="pricing-subtitle">Pay only for what you teach. Add more anytime.</p>
 
+    <!-- Billing interval toggle -->
+    <div id="pricingIntervalToggle"></div>
+
     <!-- Subject grid -->
     <div id="subjectPricingGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0;">
       <!-- Rendered by JS -->
@@ -2210,7 +2215,7 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
       </div>
     </div>
 
-    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:16px;">Prices in AUD &nbsp;·&nbsp; Billed monthly &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="closePricingModal();openBillingPortal()">Manage billing</span></p>
+    <p style="text-align:center;font-size:11px;color:#aaa;margin-top:16px;">Prices in AUD &nbsp;·&nbsp; Monthly or annual billing &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="closePricingModal();openBillingPortal()">Manage billing</span></p>
   </div>
 </div>
 
@@ -9958,6 +9963,33 @@ async function api(path, opts = {}) {
 let currentUser = null;
 let currentProfile = null;
 let authStateInitialized = false;
+let monthlyUsage = { count: 0, limit: 20, is_annual: false, remaining: 20 };
+
+async function fetchMonthlyUsage() {
+  if (!currentUser || !isPaidUser()) return;
+  try {
+    const data = await api('/api/usage');
+    if (!data.error) {
+      monthlyUsage = data;
+      updateUsageBadge();
+    }
+  } catch(e) {}
+}
+
+function updateUsageBadge() {
+  const el = document.getElementById('monthlyUsageBadge');
+  if (!el) return;
+  if (!isPaidUser()) { el.style.display = 'none'; return; }
+  el.style.display = 'inline';
+  if (monthlyUsage.is_annual) {
+    el.textContent = '∞ saves';
+    el.style.color = '#166534';
+  } else {
+    const remaining = monthlyUsage.remaining ?? (monthlyUsage.limit - monthlyUsage.count);
+    el.textContent = `${monthlyUsage.count}/${monthlyUsage.limit} saves`;
+    el.style.color = remaining <= 3 ? '#dc2626' : '#888';
+  }
+}
 
 // Initialize auth when script loads
 initAuth().then(() => {
@@ -10044,6 +10076,8 @@ function updateAuthUI(user) {
 
     // Update tier-locked subjects
     updateSubjectLocking(); updateGenCounter();
+    // Fetch monthly usage
+    fetchMonthlyUsage();
   } else {
     // User is not signed in
     if (signInBtn) signInBtn.style.display = 'block';
@@ -10354,13 +10388,20 @@ async function saveLessonToCloud(idx, btn) {
   };
   if (btn) { btn.textContent = '💾 Saving…'; btn.disabled = true; }
   const result = await api('/lessons', { method: 'POST', body: JSON.stringify(row) });
-  if (result.error) {
+  if (result.error === 'monthly_limit_reached') {
+    if (btn) { btn.textContent = '💾 Save'; btn.disabled = false; }
+    showToast('Monthly save limit reached — upgrade to annual for unlimited saves', 'error');
+    openPricingModal(true); // true = open with annual tab highlighted
+  } else if (result.error) {
     showToast('Save failed: ' + result.error, 'error');
     if (btn) { btn.textContent = '💾 Save'; btn.disabled = false; }
   } else {
     showToast('Lesson saved to library ✓', 'success');
     lesson.savedId = result.id;
     if (btn) { btn.textContent = '✓ Saved'; btn.style.background = '#22c55e'; btn.style.color = '#fff'; }
+    monthlyUsage.count = (monthlyUsage.count || 0) + 1;
+    if (monthlyUsage.remaining != null) monthlyUsage.remaining = Math.max(0, monthlyUsage.remaining - 1);
+    updateUsageBadge();
   }
 }
 
@@ -10471,13 +10512,43 @@ let _pendingSubjectCheckout = null; // subject key queued for checkout
 /**
  * Open the full pricing/subject selection modal
  */
+let _pricingInterval = 'month'; // 'month' | 'year'
+
+function openPricingModal(highlightAnnual) {
+  if (!currentUser) { showAuthModal('signup'); return; }
+  if (highlightAnnual) _pricingInterval = 'year';
+  showPricingModal();
+}
+
 function showPricingModal() {
   if (!currentUser) { showAuthModal('signup'); return; }
   const modal = document.getElementById('pricingModal');
   if (!modal) return;
   modal.style.display = 'flex';
+  renderPricingIntervalToggle();
   renderSubjectPricingGrid();
   renderAddonButtons();
+}
+
+function renderPricingIntervalToggle() {
+  const el = document.getElementById('pricingIntervalToggle');
+  if (!el) return;
+  const isAnnual = _pricingInterval === 'year';
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;background:#f3f4f6;border-radius:10px;padding:3px;width:fit-content;margin:0 auto 18px;">
+      <button onclick="setPricingInterval('month')" style="padding:7px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;${!isAnnual ? 'background:#fff;color:#1a1a2e;box-shadow:0 1px 3px rgba(0,0,0,.12);' : 'background:transparent;color:#888;'}">Monthly</button>
+      <button onclick="setPricingInterval('year')" style="padding:7px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;${isAnnual ? 'background:#fff;color:#1a1a2e;box-shadow:0 1px 3px rgba(0,0,0,.12);' : 'background:transparent;color:#888;'}">
+        Annual <span style="background:#22c55e;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px;">Save 31%</span>
+      </button>
+    </div>
+    ${isAnnual ? '<p style="text-align:center;font-size:12px;color:#166534;background:#f0fdf4;border-radius:8px;padding:8px 16px;margin-bottom:12px;">🎉 Annual plan — <strong>unlimited</strong> lesson saves + all features</p>' : '<p style="text-align:center;font-size:12px;color:#666;margin-bottom:12px;">Monthly plan includes 20 lesson saves/month</p>'}
+  `;
+}
+
+function setPricingInterval(interval) {
+  _pricingInterval = interval;
+  renderPricingIntervalToggle();
+  renderSubjectPricingGrid();
 }
 
 function closePricingModal() {
@@ -10498,7 +10569,12 @@ function renderSubjectPricingGrid() {
   entries.forEach(([key, cfg]) => {
     if (seen.has(key)) return; seen.add(key);
     const owned = mySubjects.includes(key);
-    const price = owned ? '' : (isFirst && mySubjects.length === 0 ? '$12/mo' : '$5/mo');
+    const annual = _pricingInterval === 'year';
+    const monthlyPrice = isFirst ? '$12/mo' : '$5/mo';
+    const annualPrice = isFirst ? '$99/yr' : '$45/yr';
+    const annualMonthly = isFirst ? '$8.25/mo' : '$3.75/mo';
+    const priceLabel = annual ? annualPrice : monthlyPrice;
+    const priceNote = annual ? `(${annualMonthly})` : '';
     const card = document.createElement('div');
     card.style.cssText = `border:2px solid ${owned ? '#4CAF50' : '#e0e0e0'};border-radius:12px;padding:14px 10px;text-align:center;background:${owned ? '#f0fff4' : '#fff'};`;
     card.innerHTML = `
@@ -10506,7 +10582,7 @@ function renderSubjectPricingGrid() {
       <div style="font-weight:700;font-size:12px;color:#333;">${cfg.name}</div>
       ${owned
         ? '<div style="color:#4CAF50;font-size:12px;margin-top:6px;font-weight:600;">✓ Active</div>'
-        : `<div style="font-size:11px;color:#888;margin:4px 0 8px;">${isFirst ? '$12/mo' : '$5/mo'}</div><button class="pricing-btn pro-btn" onclick="showSubjectUpgradeModal('${key}','${cfg.name}')" style="padding:6px 8px;font-size:11px;width:100%;">Unlock</button>`
+        : `<div style="font-size:11px;color:#888;margin:4px 0 2px;">${priceLabel}</div>${priceNote ? `<div style="font-size:10px;color:#aaa;margin-bottom:6px;">${priceNote}</div>` : '<div style="margin-bottom:6px;"></div>'}<button class="pricing-btn pro-btn" onclick="showSubjectUpgradeModal('${key}','${cfg.name}')" style="padding:6px 8px;font-size:11px;width:100%;">Unlock</button>`
       }
     `;
     grid.appendChild(card);
@@ -10582,7 +10658,7 @@ async function confirmSubjectCheckout() {
   const btn = document.getElementById('subjectUpgradeBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
   try {
-    const data = await api('/stripe/checkout', { method: 'POST', body: JSON.stringify({ type: 'subject', subject: subjKey }) });
+    const data = await api('/stripe/checkout', { method: 'POST', body: JSON.stringify({ type: 'subject', subject: subjKey, interval: _pricingInterval }) });
     if (data.url) {
       window.location.href = data.url;
     } else {
