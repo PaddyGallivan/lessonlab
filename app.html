@@ -2449,6 +2449,7 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
 // ============================================================================
 
 let logoData = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MiA0MiIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiPgogIDxyZWN0IHdpZHRoPSI0MiIgaGVpZ2h0PSI0MiIgcng9IjEwIiBmaWxsPSIjMTU2NUMwIi8+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNyw5KSI+CiAgICA8cGF0aCBkPSJNMTQgMCBDMTAgMCA0IDEuNSAwIDQuNSBMMCAyMiBDNCAxOSAxMCAxNy41IDE0IDE3LjUgQzE4IDE3LjUgMjQgMTkgMjggMjIgTDI4IDQuNSBDMjQgMS41IDE4IDAgMTQgMCBaIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxNCIgeTE9IjAiIHgyPSIxNCIgeTI9IjE3LjUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPGxpbmUgeDE9IjIiIHkxPSI4IiB4Mj0iMTEiIHkyPSI2LjUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOCIvPgogICAgPGxpbmUgeDE9IjIiIHkxPSIxMiIgeDI9IjExIiB5Mj0iMTAuNSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC44Ii8+CiAgICA8bGluZSB4MT0iMTciIHkxPSI2LjUiIHgyPSIyNiIgeTI9IjgiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOCIvPgogICAgPGxpbmUgeDE9IjE3IiB5MT0iMTAuNSIgeDI9IjI2IiB5Mj0iMTIiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOCIvPgogIDwvZz4KPC9zdmc+'; // LessonLab default — override in Settings
+const _defaultLogoData = logoData; // preserve default for reset on logout
 
 const SUBJ_CFG = {
   'pe': {
@@ -10280,6 +10281,7 @@ function updateAuthUI(user) {
     // Fetch monthly usage
     fetchMonthlyUsage();
     // Load school logo from profile URL if available
+    // Load school logo from profile URL into logoData (for lesson exports only — NOT the app header)
     if (currentProfile && currentProfile.school_logo && hasAddonAccess('school_branding')) {
       fetch(currentProfile.school_logo)
         .then(r => r.blob())
@@ -10288,13 +10290,15 @@ function updateAuthUI(user) {
           reader.onload = e => {
             const src = e.target.result;
             if (src.startsWith('data:image/png') || src.startsWith('data:image/jpeg') || src.startsWith('data:image/jpg')) {
-              logoData = src;
-              setHeaderLogo(src);
+              logoData = src; // used in lesson HTML/DOCX exports only
             }
           };
           reader.readAsDataURL(blob);
         })
-        .catch(() => {}); // silently ignore CORS/fetch errors
+        .catch(() => {});
+    } else if (!currentProfile || !hasAddonAccess('school_branding')) {
+      // Reset to default LessonLab logo when no branding active
+      logoData = typeof _defaultLogoData !== 'undefined' ? _defaultLogoData : logoData;
     }
   } else {
     // User is not signed in
