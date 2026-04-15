@@ -2449,7 +2449,6 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
 // ============================================================================
 
 let logoData = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MiA0MiIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiPgogIDxyZWN0IHdpZHRoPSI0MiIgaGVpZ2h0PSI0MiIgcng9IjEwIiBmaWxsPSIjMTU2NUMwIi8+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNyw5KSI+CiAgICA8cGF0aCBkPSJNMTQgMCBDMTAgMCA0IDEuNSAwIDQuNSBMMCAyMiBDNCAxOSAxMCAxNy41IDE0IDE3LjUgQzE4IDE3LjUgMjQgMTkgMjggMjIgTDI4IDQuNSBDMjQgMS41IDE4IDAgMTQgMCBaIiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxNCIgeTE9IjAiIHgyPSIxNCIgeTI9IjE3LjUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPGxpbmUgeDE9IjIiIHkxPSI4IiB4Mj0iMTEiIHkyPSI2LjUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOCIvPgogICAgPGxpbmUgeDE9IjIiIHkxPSIxMiIgeDI9IjExIiB5Mj0iMTAuNSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC44Ii8+CiAgICA8bGluZSB4MT0iMTciIHkxPSI2LjUiIHgyPSIyNiIgeTI9IjgiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOCIvPgogICAgPGxpbmUgeDE9IjE3IiB5MT0iMTAuNSIgeDI9IjI2IiB5Mj0iMTIiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOCIvPgogIDwvZz4KPC9zdmc+'; // LessonLab default — override in Settings
-const _defaultLogoData = logoData; // preserve default for reset on logout
 
 const SUBJ_CFG = {
   'pe': {
@@ -10281,25 +10280,8 @@ function updateAuthUI(user) {
     // Fetch monthly usage
     fetchMonthlyUsage();
     // Load school logo from profile URL if available
-    // Load school logo from profile URL into logoData (for lesson exports only — NOT the app header)
-    if (currentProfile && currentProfile.school_logo && hasAddonAccess('school_branding')) {
-      fetch(currentProfile.school_logo)
-        .then(r => r.blob())
-        .then(blob => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            const src = e.target.result;
-            if (src.startsWith('data:image/png') || src.startsWith('data:image/jpeg') || src.startsWith('data:image/jpg')) {
-              logoData = src; // used in lesson HTML/DOCX exports only
-            }
-          };
-          reader.readAsDataURL(blob);
-        })
-        .catch(() => {});
-    } else if (!currentProfile || !hasAddonAccess('school_branding')) {
-      // Reset to default LessonLab logo when no branding active
-      logoData = typeof _defaultLogoData !== 'undefined' ? _defaultLogoData : logoData;
-    }
+    // LessonLab logo is always used in exports by default.
+    // Teachers can upload their own DOCX template if they want custom branding.
   } else {
     // User is not signed in
     if (signInBtn) signInBtn.style.display = 'block';
@@ -11344,12 +11326,7 @@ function openAccountSettings() {
   // Show school branding section if addon is active
   var brandingSection = document.getElementById('acctBrandingSection');
   if (brandingSection) {
-    var hasBranding = hasAddonAccess('school_branding');
-    brandingSection.style.display = hasBranding ? 'block' : 'none';
-    if (hasBranding) {
-      var logoEl = document.getElementById('acctSchoolLogo');
-      if (logoEl) logoEl.value = (currentProfile && currentProfile.school_logo) || '';
-    }
+    brandingSection.style.display = hasAddonAccess('school_branding') ? 'block' : 'none';
   }
 
   // Populate email + tier badge
@@ -11396,10 +11373,6 @@ async function saveAccountSettings() {
     if (displayName) profileUpdates.display_name = displayName;
     if (schoolName) profileUpdates.school_name = schoolName;
     // Save school logo if branding addon is active
-    var logoInput = document.getElementById('acctSchoolLogo');
-    if (logoInput && hasAddonAccess('school_branding')) {
-      profileUpdates.school_logo = logoInput.value.trim() || null;
-    }
     if (Object.keys(profileUpdates).length && currentUser) {
       const profileRes = await api('/profile', { method: 'PUT', body: JSON.stringify(profileUpdates) });
       if (!profileRes.error && currentProfile) {
@@ -11612,9 +11585,7 @@ async function submitResetPassword(token) {
     <!-- School Branding section — only shown when addon is active -->
     <div id="acctBrandingSection" style="display:none;margin-bottom:1.25rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;">
       <label style="display:block;font-size:0.875rem;font-weight:600;color:#166534;margin-bottom:4px;">🏫 School Branding Active</label>
-      <div style="font-size:0.78rem;color:#374151;margin-bottom:0.625rem;">Your school name appears on all exported documents. School logo URL (optional — appears in doc header):</div>
-      <input id="acctSchoolLogo" type="url" style="width:100%;padding:0.5rem 0.75rem;border:1px solid #86efac;border-radius:0.375rem;font-size:0.875rem;box-sizing:border-box;" placeholder="https://yourschool.edu.au/logo.png"/>
-      <div style="font-size:0.72rem;color:#6b7280;margin-top:4px;">PNG or JPG. Hosted publicly (Google Drive, school website, etc.)</div>
+      <div style="font-size:0.78rem;color:#374151;line-height:1.5;">Your school name appears in the header of all exported documents. LessonLab branding is applied — upload your own DOCX template in School Settings if you'd like a custom layout.</div>
     </div>
 
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:1.25rem 0;"/>
