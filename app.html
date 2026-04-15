@@ -2217,14 +2217,7 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
           </div>
           <button id="addonBtn_full_units" class="pricing-btn pro-btn" onclick="startAddonCheckout('full_units')" style="padding:7px 12px;font-size:12px;white-space:nowrap;">$8 one-time</button>
         </div>
-        <div id="addonCard_school_branding" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;">
-          <div style="font-size:1.5rem;">🏫</div>
-          <div style="flex:1;">
-            <div style="font-weight:700;font-size:13px;">School Branding</div>
-            <div style="font-size:11px;color:#888;margin-top:2px;">Your school name on every export. Removes LessonLab watermark.</div>
-          </div>
-          <button id="addonBtn_school_branding" class="pricing-btn pro-btn" onclick="startAddonCheckout('school_branding')" style="padding:7px 12px;font-size:12px;white-space:nowrap;">$5/mo</button>
-        </div>
+
       </div>
     </div>
 
@@ -6441,12 +6434,10 @@ function _docxBuildPhasesTable(phases, times, d) {
 
 function _docxGetBrandingOpts() {
   const paid = isPaidUser();
-  const hasBranding = hasAddonAccess('school_branding');
-  const schoolName = (currentProfile && currentProfile.school_name) || '';
   return {
-    watermark: !paid,            // free users get LessonLab footer
-    schoolHeader: hasBranding && schoolName,  // branding addon + school name = custom header
-    schoolName: schoolName
+    watermark: !paid,  // free users get LessonLab watermark footer
+    schoolHeader: false,  // LessonLab brand only — no school headers
+    schoolName: ''
   };
 }
 
@@ -10774,7 +10765,7 @@ function renderSubjectPricingGrid() {
 function renderAddonButtons() {
   const myAddons = getUserAddons();
   const annual = currentProfile && currentProfile.plan_interval === 'year';
-  ['year_planner', 'cycle_planner', 'full_units', 'school_branding'].forEach(addon => {
+  ['year_planner', 'cycle_planner', 'full_units'].forEach(addon => {
     const btn = document.getElementById('addonBtn_' + addon);
     const card = document.getElementById('addonCard_' + addon);
     if (!btn) return;
@@ -11292,10 +11283,7 @@ function openAccountSettings() {
   document.getElementById('acctConfirmPassword').value = '';
   document.getElementById('acctMessage').style.display = 'none';
   // Show school branding section if addon is active
-  var brandingSection = document.getElementById('acctBrandingSection');
-  if (brandingSection) {
-    brandingSection.style.display = hasAddonAccess('school_branding') ? 'block' : 'none';
-  }
+
 
   // Populate email + tier badge
   var emailEl = document.getElementById('acctEmailDisplay');
@@ -11551,10 +11539,7 @@ async function submitResetPassword(token) {
     </div>
 
     <!-- School Branding section — only shown when addon is active -->
-    <div id="acctBrandingSection" style="display:none;margin-bottom:1.25rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;">
-      <label style="display:block;font-size:0.875rem;font-weight:600;color:#166534;margin-bottom:4px;">🏫 School Branding Active</label>
-      <div style="font-size:0.78rem;color:#374151;line-height:1.5;">Your school name appears in the header of all exported documents. LessonLab branding is applied — upload your own DOCX template in School Settings if you'd like a custom layout.</div>
-    </div>
+
 
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:1.25rem 0;"/>
 
