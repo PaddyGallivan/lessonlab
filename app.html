@@ -1938,7 +1938,7 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
         <span style="font-size:0.7rem;color:#3b82f6;background:#eff6ff;border-radius:6px;padding:3px 8px;">✓ Year + Term + Cycle Planners included</span>
         <span style="font-size:0.7rem;color:#3b82f6;background:#eff6ff;border-radius:6px;padding:3px 8px;">✓ Exit tickets on every lesson</span>
         <span style="font-size:0.7rem;color:#3b82f6;background:#eff6ff;border-radius:6px;padding:3px 8px;">✓ DOCX, PDF &amp; Compass export</span>
-        <span style="font-size:0.7rem;color:#3b82f6;background:#eff6ff;border-radius:6px;padding:3px 8px;">✓ School logo on all exports</span>
+        <span style="font-size:0.7rem;color:#3b82f6;background:#eff6ff;border-radius:6px;padding:3px 8px;">✓ School name on all exports</span>
       </div>
     </div>
 
@@ -2195,7 +2195,7 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 13px;font-size:12px;color:#166534;font-weight:600;">🎯 Exit tickets</div>
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 13px;font-size:12px;color:#166534;font-weight:600;">🧭 Compass export</div>
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 13px;font-size:12px;color:#166534;font-weight:600;">📄 DOCX &amp; PDF export</div>
-        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 13px;font-size:12px;color:#166534;font-weight:600;">🏫 School logo on exports</div>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 13px;font-size:12px;color:#166534;font-weight:600;">🏫 School name on exports</div>
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 13px;font-size:12px;color:#166534;font-weight:600;">💾 Save to cloud library</div>
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 13px;font-size:12px;color:#166534;font-weight:600;">📐 Custom school template</div>
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:7px 13px;font-size:12px;color:#166534;font-weight:600;">📤 Upload &amp; convert your existing lessons</div>
@@ -2231,7 +2231,13 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
       <div style="font-size:12px;color:#888;margin-top:4px;" id="subjectUpgradePriceNote">First subject · More subjects $5/mo each</div>
     </div>
     <button id="subjectUpgradeBtn" class="pricing-btn pro-btn" style="width:100%;padding:14px;font-size:1rem;" onclick="confirmSubjectCheckout()">Get Access — $12/mo</button>
-    <p style="font-size:11px;color:#aaa;margin-top:12px;">Cancel anytime. Secure checkout via Stripe.</p>
+    <div style="margin-top:14px;border-top:1px solid #f0f0f0;padding-top:12px;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:0;background:#f3f4f6;border-radius:8px;padding:2px;width:fit-content;margin:0 auto 10px;">
+        <button onclick="setPricingInterval('month');showSubjectUpgradeModal(window._pendingSubjectCheckout||'',document.getElementById('subjectUpgradeTitle').textContent.replace('Unlock ',''))" style="padding:5px 16px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;" id="subjectIntervalMonthBtn">Monthly</button>
+        <button onclick="setPricingInterval('year');showSubjectUpgradeModal(window._pendingSubjectCheckout||'',document.getElementById('subjectUpgradeTitle').textContent.replace('Unlock ',''))" style="padding:5px 16px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;" id="subjectIntervalAnnualBtn">Annual <span style="background:#22c55e;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:3px;">Save 31%</span></button>
+      </div>
+    </div>
+    <p style="font-size:11px;color:#aaa;margin-top:10px;">Cancel anytime. Secure checkout via Stripe.</p>
   </div>
 </div>
 <!-- PHASE 2: UNIT PLANNER -->
@@ -10806,6 +10812,18 @@ function showSubjectUpgradeModal(subjKey, displayName) {
   const btn = document.getElementById('subjectUpgradeBtn');
   if (btn) { btn.textContent = `Get ${displayName} — ${price}${unit}`; btn.disabled = false; }
   document.getElementById('subjectUpgradeModal').style.display = 'flex';
+  // Highlight active interval tab in modal toggle
+  requestAnimationFrame(() => {
+    const mBtn = document.getElementById('subjectIntervalMonthBtn');
+    const aBtn = document.getElementById('subjectIntervalAnnualBtn');
+    if (mBtn && aBtn) {
+      const ann = _pricingInterval === 'year';
+      const active = 'padding:5px 16px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:#fff;color:#1a1a2e;box-shadow:0 1px 3px rgba(0,0,0,.12);';
+      const inactive = 'padding:5px 16px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:#888;';
+      mBtn.style.cssText = ann ? inactive : active;
+      aBtn.style.cssText = ann ? active : inactive;
+    }
+  });
 }
 
 /** Show addon upgrade modal (reuse subject modal with different copy) */
