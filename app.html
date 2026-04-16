@@ -1753,44 +1753,44 @@ document.getElementById('backToSignInLink')?.addEventListener('click', function(
     <input type="text" id="schoolFooter" value="" placeholder="e.g. [Your School] — Confidential">
   </div>
 
-  <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);">
-  <div style="font-weight:700;color:var(--pri);margin-bottom:12px;font-size:14px;">📄 School Template Upload</div>
+  <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);grid-column:1/-1;">
+  <div style="font-weight:700;color:var(--pri);margin-bottom:12px;font-size:14px;grid-column:1/-1;">📄 School Template Upload</div>
 
-  <div class="form-group" style="background:#FFF8E1;border-radius:6px;padding:10px 12px;border-left:3px solid #F9A825;margin-bottom:8px;">
+  <div class="form-group" style="background:#FFF8E1;border-radius:6px;padding:10px 12px;border-left:3px solid #F9A825;margin-bottom:8px;grid-column:1/-1;">
     <span style="font-size:12px;color:#555;">&#128274; <b>Requires a paid subscription.</b> Upload your school's DOCX lesson plan template and LessonLab will match your layout and sections.</span>
   </div>
-  <div class="form-group">
+  <div class="form-group" style="grid-column:1/-1;">
     <label>Lesson Plan Template (DOCX preferred, PDF accepted)</label>
     <input type="file" id="templateUpload" accept=".docx,.pdf,.doc">
     <div id="templateStatus" style="font-size:11px;color:#666;margin-top:4px;"></div>
   </div>
-  <div class="form-group">
+  <div class="form-group" style="grid-column:1/-1;">
     <label style="font-size:11px;color:#888;">In your DOCX use placeholders: <code style="background:#f5f5f5;padding:1px 4px;border-radius:3px;">{LESSON_TITLE}</code> <code style="background:#f5f5f5;padding:1px 4px;border-radius:3px;">{LEARNING_INTENTION}</code> <code style="background:#f5f5f5;padding:1px 4px;border-radius:3px;">{SUCCESS_CRITERIA}</code> <code style="background:#f5f5f5;padding:1px 4px;border-radius:3px;">{EQUIPMENT}</code> <code style="background:#f5f5f5;padding:1px 4px;border-radius:3px;">{STEPS}</code> <code style="background:#f5f5f5;padding:1px 4px;border-radius:3px;">{DIFFERENTIATION}</code></label>
   </div>
-  <div class="form-group">
+  <div class="form-group" style="grid-column:1/-1;">
     <label>Detected Structure</label>
     <div id="templatePlaceholders" style="font-size:12px;color:#666;background:var(--light);padding:8px;border-radius:4px;min-height:30px;">No template uploaded</div>
   </div>
 
-  <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);">
-  <div style="font-weight:700;color:var(--pri);margin-bottom:12px;font-size:14px;">📋 Curriculum Scope Upload</div>
+  <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);grid-column:1/-1;">
+  <div style="font-weight:700;color:var(--pri);margin-bottom:12px;font-size:14px;grid-column:1/-1;">📋 Curriculum Scope Upload</div>
 
-  <div class="form-group">
+  <div class="form-group" style="grid-column:1/-1;">
     <label>Yearly Curriculum Overview (XLSX or CSV)</label>
     <input type="file" id="curriculumUpload" accept=".xlsx,.csv,.xls">
     <div id="curriculumStatus" style="font-size:11px;color:#666;margin-top:4px;"></div>
   </div>
-  <div class="form-group">
+  <div class="form-group" style="grid-column:1/-1;">
     <label style="font-size:11px;color:#666;">Upload your school's curriculum overview to auto-populate the Term Planner. Expected columns: Term, Subject, Unit, Focus, Year Level, Weeks.</label>
   </div>
-  <div class="form-group">
+  <div class="form-group" style="grid-column:1/-1;">
     <label>Curriculum Data Preview</label>
     <div id="curriculumUploadPreview" style="font-size:12px;color:#666;background:var(--light);padding:8px;border-radius:4px;min-height:30px;max-height:200px;overflow-y:auto;">No curriculum uploaded</div>
   </div>
 
-  <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);">
+  <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);grid-column:1/-1;">
 
-  <div class="form-group">
+  <div class="form-group" style="grid-column:1/-1;">
     <button class="btn" id="saveAllSettingsBtn" style="width:100%;margin-top:8px;">💾 Save All Settings</button>
     <button class="btn btn-sec" id="resetSettingsBtn" style="width:100%;margin-top:8px;">Reset to Defaults</button>
   </div>
@@ -5482,6 +5482,9 @@ initBuildWorker();
 function goPanel(name) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById(name + 'Panel').classList.add('active');
+  // Auto-close settings panel when switching panels
+  var sp = document.getElementById('settingsPanel');
+  if (sp) sp.classList.remove('show');
 }
 
 function initSubjects() {
