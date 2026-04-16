@@ -1174,6 +1174,15 @@
       #header-right { display: none !important; }
       #signInBtn { padding: 6px 12px !important; font-size: 0.85rem !important; }
     }
+    @media (max-width: 375px) {
+      header[role="banner"] { padding: 8px !important; }
+      .header-title h1 { font-size: 18px !important; }
+      .settings-panel { padding: 10px !important; }
+      .settings-panel.show { grid-template-columns: 1fr !important; }
+      .form-group input, .form-group select, .form-group textarea { font-size: 16px !important; }
+      .modal-content { padding: 16px !important; margin: 8px !important; width: calc(100% - 16px) !important; }
+      .btn { font-size: 0.85rem !important; padding: 8px 12px !important; }
+    }
 
     /* ── LANDING PAGE SUBJECTS GRID PADDING ── */
     .subjects-grid {
@@ -3122,7 +3131,7 @@ const YEAR_LEVELS = ['Foundation', 'Years 1-2', 'Years 3-4', 'Years 5-6'];
 // ============================================================================
 
 let state = {
-  school: 'Williamstown Primary School',
+  school: '',
   state: 'VIC',
   duration: 60,
   term: 'Term 1',
@@ -9924,7 +9933,7 @@ document.getElementById('saveAllSettingsBtn').onclick = () => {
 document.getElementById('resetSettingsBtn').onclick = () => {
   if (!confirm('Reset all settings to defaults? This will clear your logo, template, and curriculum uploads.')) return;
 
-  state.school = 'Williamstown Primary School';
+  state.school = '';
   state.state = 'VIC';
   state.duration = 60;
   state.term = 'Term 1';
@@ -9932,8 +9941,8 @@ document.getElementById('resetSettingsBtn').onclick = () => {
   schoolTemplate = null;
   schoolCurriculum = null;
 
-  document.getElementById('schoolName').value = state.school;
-  document.getElementById('headerSchool').textContent = state.school;
+  document.getElementById('schoolName').value = '';
+  document.getElementById('headerSchool').textContent = '';
   document.getElementById('schoolState').value = state.state;
   document.getElementById('schoolDuration').value = state.duration;
   document.getElementById('schoolTerm').value = state.term;
