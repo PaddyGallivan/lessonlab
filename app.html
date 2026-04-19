@@ -6128,35 +6128,67 @@ function generateAll() {
     var curWeek = week;
     var curCount = count;
     var focus = state.selectedFocuses[curCount % state.selectedFocuses.length];
-    var lessonData = generateLesson(state.subject, state.unit, focus, curWeek, weeks, state.yearLevel);
     var cds = (CD[state.subject] && CD[state.subject][state.yearLevel]) ? CD[state.subject][state.yearLevel] : [];
 
-    var fullData = {
-      school: state.school,
-      state: state.state,
-      subject: state.subjectCfg.name,
-      subjectKey: state.subject,
-      year: state.yearLevel,
-      term: state.term,
-      week: curWeek,
-      duration: state.duration,
-      title: lessonData.title,
-      li: lessonData.li,
-      sc: lessonData.sc,
-      equipment: lessonData.equipment,
-      context: lessonData.context,
-      logo: logoData,
-      differentiation: lessonData.differentiation || null,
-  exitTicket: generateExitTicket(lessonData.sc, lessonData.li)
-    };
+    function buildAndRender(lessonData) {
+      var fullData = {
+        school: state.school,
+        state: state.state,
+        subject: state.subjectCfg.name,
+        subjectKey: state.subject,
+        year: state.yearLevel,
+        term: state.term,
+        week: curWeek,
+        duration: state.duration,
+        title: lessonData.title,
+        li: lessonData.li,
+        sc: lessonData.sc,
+        equipment: lessonData.equipment,
+        context: lessonData.context,
+        logo: logoData,
+        differentiation: lessonData.differentiation || null,
+        exitTicket: lessonData.exitTicket || generateExitTicket(lessonData.sc, lessonData.li)
+      };
+      buildHTMLAsync(fullData, state.subjectCfg, cds).then(function(html) {
+        state.lessons.push({ week: curWeek, title: lessonData.title, li: lessonData.li, html: html, data: fullData });
+        document.getElementById('progressFill').style.width = (((curCount + 1) / weeks) * 100) + '%';
+        count++;
+        week++;
+        processNext();
+      });
+    }
 
-    buildHTMLAsync(fullData, state.subjectCfg, cds).then(function(html) {
-      state.lessons.push({ week: curWeek, title: lessonData.title, li: lessonData.li, html: html, data: fullData });
-      document.getElementById('progressFill').style.width = (((curCount + 1) / weeks) * 100) + '%';
-      count++;
-      week++;
-      processNext();
-    });
+    // Try Claude AI generation first, fall back to template if not authenticated or error
+    if (currentUser && isPaidUser()) {
+      var unitObj = (UNITS[state.subject] || []).find(function(u) { return u.id === state.unit; });
+      api('/lessons/generate', {
+        method: 'POST',
+        body: JSON.stringify({
+          subject: state.subject,
+          unit: unitObj ? unitObj.name : state.unit,
+          focus: focus,
+          week: curWeek,
+          total_weeks: weeks,
+          year_level: state.yearLevel,
+          duration: state.duration,
+          school_name: state.school,
+          curriculum_standards: cds.slice(0, 4)
+        })
+      }).then(function(res) {
+        if (res && res.lesson) {
+          buildAndRender(res.lesson);
+        } else {
+          // Fallback to template
+          buildAndRender(generateLesson(state.subject, state.unit, focus, curWeek, weeks, state.yearLevel));
+        }
+      }).catch(function() {
+        // Fallback to template on any error
+        buildAndRender(generateLesson(state.subject, state.unit, focus, curWeek, weeks, state.yearLevel));
+      });
+    } else {
+      // Free tier or not logged in - use template
+      buildAndRender(generateLesson(state.subject, state.unit, focus, curWeek, weeks, state.yearLevel));
+    }
   }
 
   processNext();
