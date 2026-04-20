@@ -1619,7 +1619,9 @@ document.addEventListener('click', function() {
     <!-- Sign Up Tab -->
     <div id="signupContent" class="auth-content">
       <div id="signupError"></div>
-
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#1d4ed8;text-align:center;">
+        ✦ Your first lesson is AI-generated — free, no card needed
+      </div>
       <form id="signupForm" style="display: flex; flex-direction: column; gap: 0;">
         <div class="auth-form-group">
           <label class="auth-label">Email Address</label>
@@ -1627,8 +1629,12 @@ document.addEventListener('click', function() {
         </div>
 
         <div class="auth-form-group">
-          <label class="auth-label">Display Name</label>
+          <label class="auth-label">Your Name</label>
           <input type="text" id="signupDisplayName" class="auth-input" placeholder="Jane Smith" required>
+        </div>
+        <div class="auth-form-group">
+          <label class="auth-label">School <span style="color:#94a3b8;font-weight:400;">(optional)</span></label>
+          <input type="text" id="signupSchool" class="auth-input" placeholder="Williamstown Primary School">
         </div>
 
         <div class="auth-form-group">
@@ -6105,7 +6111,7 @@ function generateAll() {
   if (!isPaidUser()) {
     var used = getGenCount();
     if (used >= FREE_GEN_LIMIT) {
-      showUpgradePrompt('lesson generator');
+      showFreeTrialExpiredModal();
       return;
     }
   }
@@ -6162,8 +6168,9 @@ function generateAll() {
       });
     }
 
-    // AI generation for paid users, template fallback for free/error
-    if (currentUser && isPaidUser()) {
+    // AI generation: paid users always, free users get first lesson as AI (hook)
+    var isFirstLesson = (curCount === 0 && getGenCount() === 0);
+    if (currentUser && (isPaidUser() || isFirstLesson)) {
       var unitObj = (UNITS[state.subject] || []).find(function(u) { return u.id === state.unit; });
       // Update progress label to show AI is working
       var progLabel = document.getElementById('progressLabel');
@@ -10387,7 +10394,7 @@ async function handleSignUp(email, password, displayName) {
 
     const data = await api('/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ email, password, display_name: displayName })
+      body: JSON.stringify({ email, password, display_name: displayName , school_name })
     });
 
     if (data.error) {
@@ -10557,6 +10564,31 @@ function updateSubjectLocking() {
 /**
  * Show upgrade prompt modal — if subject key given, show single-subject modal
  */
+function showFreeTrialExpiredModal() {
+  var modal = document.getElementById('freeTrialExpiredModal');
+  if (modal) { modal.style.display = 'flex'; return; }
+  var el = document.createElement('div');
+  el.id = 'freeTrialExpiredModal';
+  el.className = 'pricing-modal-overlay';
+  el.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;';
+  el.innerHTML = `
+    <div class="pricing-modal" style="max-width:420px;padding:40px;text-align:center;position:relative;">
+      <button onclick="document.getElementById('freeTrialExpiredModal').style.display='none'" 
+        style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#999;">&times;</button>
+      <div style="font-size:3.5rem;margin-bottom:16px;">✨</div>
+      <h2 style="font-size:1.4rem;margin-bottom:10px;color:#0f172a;">You've seen what AI can do.</h2>
+      <p style="color:#475569;margin-bottom:8px;line-height:1.6;">Your 3 free previews are done. Unlock your subject to get AI-generated lessons — unique every time, VC2.0 aligned, ready to teach.</p>
+      <p style="color:#94a3b8;font-size:13px;margin-bottom:24px;">From $12/month. Cancel anytime.</p>
+      <button onclick="document.getElementById('freeTrialExpiredModal').style.display='none'; openPricingModal();"
+        style="width:100%;padding:14px;background:#2563eb;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">
+        Unlock AI lessons →
+      </button>
+      <p style="margin-top:12px;font-size:12px;color:#94a3b8;">💳 Secure checkout via Stripe</p>
+    </div>`;
+  document.body.appendChild(el);
+  el.onclick = function(e) { if (e.target === el) el.style.display = 'none'; };
+}
+
 function showUpgradePrompt(subjectDisplayName = null) {
   if (!currentUser) { showAuthModal('signup'); return; }
   if (subjectDisplayName && subjectDisplayName !== 'lesson generator' && subjectDisplayName !== 'Slide Generator' && subjectDisplayName !== 'School Template Upload') {
