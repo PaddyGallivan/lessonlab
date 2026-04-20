@@ -6134,7 +6134,7 @@ function generateAll() {
     var focus = state.selectedFocuses[curCount % state.selectedFocuses.length];
     var cds = (CD[state.subject] && CD[state.subject][state.yearLevel]) ? CD[state.subject][state.yearLevel] : [];
 
-    function buildAndRender(lessonData) {
+    function buildAndRender(lessonData, aiLessonId) {
       var fullData = {
         school: state.school,
         state: state.state,
@@ -6154,7 +6154,7 @@ function generateAll() {
         exitTicket: lessonData.exitTicket || generateExitTicket(lessonData.sc, lessonData.li)
       };
       buildHTMLAsync(fullData, state.subjectCfg, cds).then(function(html) {
-        state.lessons.push({ week: curWeek, title: lessonData.title, li: lessonData.li, html: html, data: fullData });
+        state.lessons.push({ week: curWeek, title: lessonData.title, li: lessonData.li, html: html, data: fullData, aiLessonId: aiLessonId || null });
         document.getElementById('progressFill').style.width = (((curCount + 1) / weeks) * 100) + '%';
         count++;
         week++;
@@ -6197,7 +6197,7 @@ function generateAll() {
           var ctx = typeof l.context === 'string' ? l.context : 
             (l.context ? 'Building on prior learning.' : '');
           buildAndRender({ title: l.title, li: l.li, sc: l.sc, equipment: l.equipment, 
-            context: ctx, differentiation: normDiff, exitTicket: l.exitTicket });
+            context: ctx, differentiation: normDiff, exitTicket: l.exitTicket }, res.ai_lesson_id || null);
         } else {
           buildAndRender(generateLesson(state.subject, state.unit, focus, curWeek, weeks, state.yearLevel));
         }
@@ -11526,6 +11526,35 @@ async function submitResetPassword(token) {
     if (btn) { btn.disabled = false; btn.textContent = 'Set New Password'; }
   }
 }
+
+function rateLessonAI(idx, rating, btn) {
+  var lesson = state.lessons && state.lessons[idx];
+  if (!lesson || !lesson.aiLessonId) {
+    // No AI lesson ID - this was a template lesson
+    showToast('Rating only available for AI-generated lessons.', 'info');
+    return;
+  }
+  if (!currentUser) { showToast('Sign in to rate lessons.', 'error'); return; }
+  
+  btn.disabled = true;
+  var siblingBtns = btn.parentElement.querySelectorAll('button[onclick*="rateLessonAI"]');
+  siblingBtns.forEach(function(b) { b.style.opacity = '0.4'; });
+  btn.style.opacity = '1';
+  btn.style.fontWeight = 'bold';
+  
+  api('/lessons/rate/' + lesson.aiLessonId, {
+    method: 'POST',
+    body: JSON.stringify({ rating: rating })
+  }).then(function(res) {
+    if (res && res.success) {
+      showToast(rating === 1 ? '👍 Thanks! Helps us improve.' : '👎 Noted. We'll improve this.', 'success');
+    }
+  }).catch(function() {
+    btn.disabled = false;
+    siblingBtns.forEach(function(b) { b.style.opacity = '1'; });
+  });
+}
+
 </script>
 <div id="adminPanelModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:5000;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;">
   <div style="background:white;border-radius:16px;width:100%;max-width:900px;padding:32px;">
